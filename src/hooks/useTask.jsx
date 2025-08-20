@@ -1,25 +1,31 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export function useTask() {
   const [tasks, setTasks] = useState([]);
+  const nextIdRef = useRef(1);
 
   useEffect(() => {
     const savedTasks = localStorage.getItem("taskfield");
     if (savedTasks) {
-      setTasks(JSON.parse(savedTasks));
+      const parsedTasks = JSON.parse(savedTasks);
+      setTasks(parsedTasks);
+      if (parsedTasks.length > 0) {
+        const maxId = Math.max(...parsedTasks.map((task) => task.id));
+        nextIdRef.current = maxId + 1;
+      }
     }
   }, []);
 
   const addTask = (text) => {
-    const newTask = {
-      id: Date.now(),
-      text,
-      completed: false,
-    };
-
     setTasks((prevTasks) => {
+      const newTask = {
+        id: nextIdRef.current,
+        text,
+        completed: false,
+      };
       const updatedTasks = [...prevTasks, newTask];
       localStorage.setItem("taskfield", JSON.stringify(updatedTasks));
+      nextIdRef.current += 1;
       return updatedTasks;
     });
   };
