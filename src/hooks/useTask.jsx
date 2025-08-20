@@ -41,11 +41,24 @@ export function useTask() {
       return updatedTasks;
     });
   };
+  const toggleClean = () => {
+    setTasks([]);
+    localStorage.setItem("taskfield", JSON.stringify([]));
+  };
+  const toggleFilter = () => {
+    setTasks((prevTasks) => {
+      const updatedTasks = prevTasks.filter((task) => task.completed !== true);
+      localStorage.setItem("taskfield", JSON.stringify(updatedTasks));
+      return updatedTasks;
+    });
+  };
 
   return {
     tasks,
     addTask,
     deleteTask,
     toggleTask,
+    toggleClean,
+    toggleFilter,
   };
 }

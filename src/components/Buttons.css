@@ -1,0 +1,25 @@
+.icons-properties {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.6rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1.1rem;
+}
+.buttons {
+  display: flex;
+  flex-direction: row;
+
+  align-items: center;
+}
+.icons-properties:active {
+  transform: scale(0.95);
+}
+.icons-properties:hover {
+  transform: scale(1.1);
+}

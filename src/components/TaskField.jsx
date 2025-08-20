@@ -4,7 +4,11 @@ import "./TaskField.css";
 export default function TaskField({ task, onToggleComplete, onDelete }) {
   return (
     <div className={`task-item ${task.completed ? true : false}`}>
-      <div className="task-status" onClick={() => onToggleComplete(task.id)}>
+      <div
+        title="Complete task"
+        className="task-status"
+        onClick={() => onToggleComplete(task.id)}
+      >
         {task.completed ? (
           <FaCheckCircle className="icon completed-icon" />
         ) : (
