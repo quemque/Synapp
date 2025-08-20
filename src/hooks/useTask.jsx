@@ -7,17 +7,33 @@ export function useTask() {
   useEffect(() => {
     const savedTasks = localStorage.getItem("taskfield");
     if (savedTasks) {
-      const parsedTasks = JSON.parse(savedTasks);
-      setTasks(parsedTasks);
-      if (parsedTasks.length > 0) {
-        const maxId = Math.max(...parsedTasks.map((task) => task.id));
-        nextIdRef.current = maxId + 1;
+      try {
+        const parsedTasks = JSON.parse(savedTasks);
+        const validTasks = parsedTasks.filter(
+          (task) => task && typeof task.id === "number" && !isNaN(task.id)
+        );
+        setTasks(validTasks);
+
+        if (validTasks.length > 0) {
+          const maxId = Math.max(...validTasks.map((task) => task.id));
+          nextIdRef.current = maxId + 1;
+        } else {
+          nextIdRef.current = 1;
+        }
+      } catch (error) {
+        console.error("Error parsing tasks from localStorage:", error);
+        setTasks([]);
+        nextIdRef.current = 1;
       }
     }
   }, []);
 
   const addTask = (text) => {
     setTasks((prevTasks) => {
+      if (typeof nextIdRef.current !== "number" || isNaN(nextIdRef.current)) {
+        nextIdRef.current = 1;
+      }
+
       const newTask = {
         id: nextIdRef.current,
         text,
@@ -59,6 +75,12 @@ export function useTask() {
     });
   };
 
+  const resetApp = () => {
+    setTasks([]);
+    nextIdRef.current = 1;
+    localStorage.removeItem("taskfield");
+  };
+
   return {
     tasks,
     addTask,
@@ -66,5 +88,6 @@ export function useTask() {
     toggleTask,
     toggleClean,
     toggleFilter,
+    resetApp,
   };
 }
