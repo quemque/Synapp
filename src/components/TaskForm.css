@@ -2,15 +2,39 @@
   width: 100%;
   margin-bottom: 2rem;
 }
-
-.task-input {
-  width: 100%;
-  padding: 1rem;
+.form-items {
+  display: flex;
+  justify-content: center;
+}
+.icon-submit {
+  margin-top: 3px;
+  font-size: 1.5rem;
+}
+.task-input-button {
+  width: 25%;
+  padding: 0.5em;
   font-size: 1.1rem;
   border: 2px solid white;
-  border-radius: 8px;
+  border-radius: 12px;
   background-color: #242424;
   color: white;
+  border: 2px solid white;
+  box-sizing: border-box;
+  margin-bottom: 1rem;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  min-height: 60px;
+}
+.task-input {
+  width: 100%;
+  padding: 0.5em;
+  font-size: 1.1rem;
+  border: 2px solid white;
+  border-radius: 12px;
+  background-color: #242424;
+  color: white;
+  border: 2px solid white;
   box-sizing: border-box;
   margin-bottom: 1rem;
   white-space: pre-wrap;
@@ -21,14 +45,9 @@
   line-height: 1.5;
 }
 
-.task-input:focus {
-  outline: none;
-  border-color: #48bb78;
-}
-
 @media (max-width: 768px) {
   .task-input {
-    padding: 0.8rem;
+    padding: 1rem;
     font-size: 1rem;
   }
 }

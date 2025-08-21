@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./TaskForm.css";
+import { MdKeyboardReturn } from "react-icons/md";
 
 export default function TaskForm({ onAddTask }) {
   const [inputValue, setInputValue] = useState("");
@@ -12,14 +13,17 @@ export default function TaskForm({ onAddTask }) {
   };
   return (
     <div>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="form-items">
         <input
           type="text"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           placeholder="Enter new todo"
+          className="task-input"
         />
-        <button type="submit">Add Task</button>
+        <button type="submit" className="task-input-button">
+          <MdKeyboardReturn className="icon-submit" />
+        </button>
       </form>
     </div>
   );
