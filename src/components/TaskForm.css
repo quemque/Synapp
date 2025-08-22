@@ -1,60 +1,245 @@
-.task-form {
-  width: 100%;
-  margin-bottom: 2rem;
-}
 .form-items {
   display: flex;
-  justify-content: center;
-}
-.icon-submit {
-  margin-top: 3px;
-  font-size: 1.5rem;
-}
-.task-input-button {
-  width: 25%;
-  padding: 0.5em;
-  font-size: 1.1rem;
-  border: 2px solid white;
-  border-radius: 12px;
-  background-color: #242424;
-  color: white;
-  border: 2px solid white;
-  box-sizing: border-box;
-  margin-bottom: 1rem;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  min-height: 60px;
-}
-.task-input {
+  align-items: center;
+  gap: 12px;
+  position: relative;
   width: 100%;
-  padding: 0.5em;
-  font-size: 1.1rem;
-  border: 2px solid white;
-  border-radius: 12px;
+}
+
+.category-selector {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 60px;
+}
+
+.category-button {
+  background: none;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-size: 18px;
+
+  height: 50px;
+  width: 50px;
+  color: #e0e0e0;
+}
+
+.category-button:hover {
+  background-color: #a0aec0;
+  border-color: #a0aec0;
+  color: #242424;
+}
+
+.category-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #242424;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  min-width: 150px;
+  margin-top: 8px;
+}
+
+.category-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 85%;
+  padding: 8px 12px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  font-size: 14px;
+  color: #e0e0e0;
+}
+
+.category-menu-item:hover {
+  background-color: #333;
+}
+
+.category-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: #e0e0e0;
+}
+
+.task-input {
+  flex: 1;
+  padding: 12px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.2s ease;
   background-color: #242424;
   color: white;
-  border: 2px solid white;
-  box-sizing: border-box;
-  margin-bottom: 1rem;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
+  height: 60px;
   min-height: 60px;
+  box-sizing: border-box;
   resize: vertical;
   line-height: 1.5;
 }
 
+.task-input:focus {
+  border-color: #007bff;
+}
+
+.task-input-button {
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  color: white;
+  background-color: #242424;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60px;
+  width: 60px;
+  min-width: 60px;
+}
+.task-input-button {
+  margin-bottom: 0;
+  border: 2px solid white;
+}
+
+.task-input-button:hover {
+  border-color: #0056b3;
+}
+
+.icon-submit {
+  font-size: 24px;
+  border-color: #242424;
+}
+
+.category-menu::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+}
+
+.task-form {
+  width: 100%;
+  margin-bottom: 2rem;
+}
+
+.icon-submit {
+  margin-top: 2px;
+}
+
+.task-input {
+  width: 100%;
+  margin-bottom: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.form-items > * {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 @media (max-width: 768px) {
+  .form-items {
+    gap: 10px;
+  }
+
   .task-input {
     padding: 1rem;
     font-size: 1rem;
+    height: 55px;
+  }
+
+  .category-button {
+    height: 45px;
+    width: 45px;
+    font-size: 18px;
+    padding: 10px;
+  }
+
+  .task-input-button {
+    height: 55px;
+    width: 55px;
+  }
+
+  .icon-submit {
+    font-size: 20px;
   }
 }
 
 @media (max-width: 480px) {
+  .form-items {
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
   .task-input {
-    padding: 0.6rem;
+    padding: 0.8rem;
     font-size: 0.9rem;
+    height: 50px;
+    order: 2;
+    width: 100%;
+  }
+
+  .category-selector {
+    order: 1;
+    height: 50px;
+  }
+
+  .category-button {
+    height: 40px;
+    width: 40px;
+    font-size: 16px;
+    padding: 8px;
+  }
+
+  .task-input-button {
+    order: 3;
+    height: 50px;
+    width: 50px;
+    margin-top: 8px;
+  }
+
+  .icon-submit {
+    font-size: 18px;
+  }
+
+  .category-menu {
+    left: -50px;
+    min-width: 140px;
+  }
+}
+
+.category-menu {
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

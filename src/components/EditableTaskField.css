@@ -21,13 +21,24 @@
   line-height: 1.5;
 }
 
+.task-category {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem; /* Увеличиваем размер иконки */
+  border-radius: 10px;
+  min-width: 15px; /* Увеличиваем минимальную ширину */
+  height: 15px; /* Увеличиваем высоту */
+  flex-shrink: 0;
+  margin-right: 1rem; /* Добавляем отступ справа от текста */
+  transition: all 0.3s ease;
+}
 .task-item:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
 .task-item.completed {
-  border-left-color: #48bb78;
   background: linear-gradient(135deg, #2d3748 0%, #38a169 50%);
 }
 
@@ -182,4 +193,22 @@
   .delete-btn {
     padding: 0.5rem;
   }
+}
+
+.task-edit-input {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 16px;
+  outline: none;
+}
+
+.task-text {
+  cursor: pointer;
+  transition: background-color 0.5s;
+}
+
+.task-text:hover {
+  background-color: rgba(200, 200, 200, 0.5);
+  border-radius: 6px;
 }

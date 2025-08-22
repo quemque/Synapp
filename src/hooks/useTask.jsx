@@ -28,7 +28,7 @@ export function useTask() {
     }
   }, []);
 
-  const addTask = (text) => {
+  const addTask = (text, category = "general") => {
     setTasks((prevTasks) => {
       if (typeof nextIdRef.current !== "number" || isNaN(nextIdRef.current)) {
         nextIdRef.current = 1;
@@ -37,6 +37,7 @@ export function useTask() {
       const newTask = {
         id: nextIdRef.current,
         text,
+        category,
         completed: false,
       };
       const updatedTasks = [...prevTasks, newTask];
@@ -80,6 +81,21 @@ export function useTask() {
     nextIdRef.current = 1;
     localStorage.removeItem("taskfield");
   };
+  const editTask = (id, newText, newCategory = null) => {
+    setTasks((prevTasks) => {
+      const updatedTasks = prevTasks.map((task) =>
+        task.id === id
+          ? {
+              ...task,
+              text: newText,
+              ...(newCategory && { category: newCategory }),
+            }
+          : task
+      );
+      localStorage.setItem("taskfield", JSON.stringify(updatedTasks));
+      return updatedTasks;
+    });
+  };
 
   return {
     tasks,
@@ -89,5 +105,6 @@ export function useTask() {
     toggleClean,
     toggleFilter,
     resetApp,
+    editTask,
   };
 }

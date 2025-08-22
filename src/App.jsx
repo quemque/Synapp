@@ -1,12 +1,19 @@
 import "./App.css";
 import TaskForm from "./components/TaskForm";
-import TaskField from "./components/TaskField";
+import EditableTaskField from "./components/EditableTaskField";
 import { useTask } from "./hooks/useTask.jsx";
 import Buttons from "./components/Buttons.jsx";
 
 function App() {
-  const { tasks, addTask, deleteTask, toggleTask, toggleClean, toggleFilter } =
-    useTask();
+  const {
+    tasks,
+    addTask,
+    deleteTask,
+    toggleTask,
+    toggleClean,
+    toggleFilter,
+    editTask,
+  } = useTask();
 
   return (
     <div>
@@ -16,11 +23,12 @@ function App() {
         <Buttons cleaning={toggleClean} filterb={toggleFilter} />
       )}
       {tasks.map((task) => (
-        <TaskField
+        <EditableTaskField
           key={task.id}
           task={task}
           onToggleComplete={toggleTask}
           onDelete={deleteTask}
+          onEdit={editTask}
         />
       ))}
     </div>
