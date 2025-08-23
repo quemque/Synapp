@@ -1,4 +1,40 @@
+.drag-handle-container {
+  position: absolute;
+  left: -25px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  cursor: grab;
+  color: #ccc;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.task-item:hover .drag-handle-container {
+  opacity: 1;
+}
+
+.drag-handle-icon {
+  font-size: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .drag-handle-container {
+    left: -20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .drag-handle-container {
+    left: -15px;
+  }
+}
 .task-item {
+  position: relative;
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -25,12 +61,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1rem; /* Увеличиваем размер иконки */
+  font-size: 1rem;
   border-radius: 10px;
-  min-width: 15px; /* Увеличиваем минимальную ширину */
-  height: 15px; /* Увеличиваем высоту */
+  min-width: 15px;
+  height: 15px;
   flex-shrink: 0;
-  margin-right: 1rem; /* Добавляем отступ справа от текста */
+  margin-right: 1rem;
   transition: all 0.3s ease;
 }
 .task-item:hover {

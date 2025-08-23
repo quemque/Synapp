@@ -8,9 +8,12 @@ import {
   FaCheckCircle,
   FaRegCircle,
   FaTrashAlt,
+  FaGripLines,
 } from "react-icons/fa";
 import { useState } from "react";
 import "./EditableTaskField.css";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 export default function EditableTaskField({
   task,
@@ -18,6 +21,21 @@ export default function EditableTaskField({
   onDelete,
   onEdit,
 }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: task.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(task.text);
 
@@ -86,7 +104,15 @@ export default function EditableTaskField({
   };
 
   return (
-    <div className={`task-item ${task.completed ? "completed" : ""}`}>
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      className={`task-item ${task.completed ? "completed" : ""}`}
+    >
+      <div className="drag-handle-container">
+        <FaGripLines className="drag-handle-icon" {...listeners} />
+      </div>
       <div
         title="Complete task"
         className="task-status"

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { arrayMove } from "@dnd-kit/sortable";
 
 export function useTask() {
   const [tasks, setTasks] = useState([]);
@@ -64,10 +65,12 @@ export function useTask() {
       return updatedTasks;
     });
   };
+
   const toggleClean = () => {
     setTasks([]);
     localStorage.setItem("taskfield", JSON.stringify([]));
   };
+
   const toggleFilter = () => {
     setTasks((prevTasks) => {
       const updatedTasks = prevTasks.filter((task) => task.completed !== true);
@@ -81,6 +84,7 @@ export function useTask() {
     nextIdRef.current = 1;
     localStorage.removeItem("taskfield");
   };
+
   const editTask = (id, newText, newCategory = null) => {
     setTasks((prevTasks) => {
       const updatedTasks = prevTasks.map((task) =>
@@ -97,6 +101,14 @@ export function useTask() {
     });
   };
 
+  const reorderTasks = (oldIndex, newIndex) => {
+    setTasks((items) => {
+      const updatedTasks = arrayMove(items, oldIndex, newIndex);
+      localStorage.setItem("taskfield", JSON.stringify(updatedTasks));
+      return updatedTasks;
+    });
+  };
+
   return {
     tasks,
     addTask,
@@ -106,5 +118,6 @@ export function useTask() {
     toggleFilter,
     resetApp,
     editTask,
+    reorderTasks,
   };
 }
