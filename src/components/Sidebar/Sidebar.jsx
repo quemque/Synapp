@@ -1,24 +1,82 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { AiOutlineClose } from "react-icons/ai";
-import { FaTasks, FaTags } from "react-icons/fa";
+import { AiOutlineClose, AiOutlineDown, AiOutlineUp } from "react-icons/ai";
+import {
+  FaTasks,
+  FaTags,
+  FaHome,
+  FaBriefcase,
+  FaBook,
+  FaShoppingCart,
+  FaHeart,
+  FaEllipsisH,
+} from "react-icons/fa";
+import { MdNotificationImportant } from "react-icons/md";
 import "./Sidebar.css";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const tags = ["Urgent", "Home", "Work", "Study", "Shopping", "Personal"];
 
   const menuItems = [
     { path: "/", label: "All tasks", icon: <FaTasks /> },
-    { path: "/tags", label: "Tags", icon: <FaTags /> },
+    {
+      path: "/tags",
+      label: "Tags",
+      icon: <FaTags />,
+      hasDropdown: true,
+    },
   ];
 
-  // Close sidebar when location changes
+  // Функция для получения цвета категории
+  const getCategoryColor = (category) => {
+    const cat = category || "general";
+    switch (cat.toLowerCase()) {
+      case "home":
+        return "#28a745";
+      case "work":
+        return "#007bff";
+      case "study":
+        return "#ffc107";
+      case "shopping":
+        return "#fd7e14";
+      case "personal":
+        return "#e83e8c";
+      case "urgent":
+        return "#f1273bff";
+      default:
+        return "#6c757d";
+    }
+  };
+
+  // Функция для получения иконки категории
+  const getCategoryIcon = (category) => {
+    const cat = category || "general";
+    switch (cat.toLowerCase()) {
+      case "urgent":
+        return <MdNotificationImportant />;
+      case "home":
+        return <FaHome />;
+      case "work":
+        return <FaBriefcase />;
+      case "study":
+        return <FaBook />;
+      case "shopping":
+        return <FaShoppingCart />;
+      case "personal":
+        return <FaHeart />;
+
+      default:
+        return <FaEllipsisH />;
+    }
+  };
+
   useEffect(() => {
     setIsOpen(false);
   }, [location.pathname]);
 
-  // Close sidebar when pressing Escape key
   useEffect(() => {
     const handleEscape = (event) => {
       if (event.key === "Escape" && isOpen) {
@@ -30,7 +88,6 @@ const Sidebar = () => {
     return () => document.removeEventListener("keydown", handleEscape);
   }, [isOpen]);
 
-  // Prevent body scroll when sidebar is open on mobile
   useEffect(() => {
     if (isOpen && window.innerWidth <= 768) {
       document.body.style.overflow = "hidden";
@@ -51,6 +108,7 @@ const Sidebar = () => {
   const closeSidebar = () => {
     console.log("Close sidebar clicked");
     setIsOpen(false);
+    setDropdownOpen(false);
   };
 
   const handleOverlayClick = (event) => {
@@ -59,9 +117,12 @@ const Sidebar = () => {
     }
   };
 
+  const toggleDropdown = () => {
+    setDropdownOpen(!dropdownOpen);
+  };
+
   return (
     <>
-      {/* Burger menu button - hidden when sidebar is open */}
       {!isOpen && (
         <button
           className="burger-button"
@@ -73,10 +134,8 @@ const Sidebar = () => {
             top: "15px",
             left: "15px",
             zIndex: 9999,
-            //background-color: #242424;
             background: "#242424",
             border: "none",
-            //borderRadius: "4px",
             width: "40px",
             height: "40px",
             display: "flex",
@@ -86,18 +145,13 @@ const Sidebar = () => {
             cursor: "pointer",
             padding: 0,
             transition: "all 0.3s ease",
-            //boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
             pointerEvents: "auto",
           }}
           onMouseEnter={(e) => {
-            //e.target.style.background = "#2980b9";
             e.target.style.transform = "scale(1.05)";
-            //e.target.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.2)";
           }}
           onMouseLeave={(e) => {
-            //e.target.style.background = "#3498db";
             e.target.style.transform = "scale(1)";
-            //e.target.style.boxShadow = "0 2px 8px rgba(0, 0, 0, 0.15)";
           }}
         >
           <span
@@ -133,7 +187,6 @@ const Sidebar = () => {
         </button>
       )}
 
-      {/* Overlay */}
       {isOpen && (
         <div
           className="sidebar-overlay"
@@ -153,7 +206,6 @@ const Sidebar = () => {
         />
       )}
 
-      {/* Sidebar */}
       <aside
         className={`sidebar ${isOpen ? "open" : ""}`}
         aria-label="Навигационное меню"
@@ -236,67 +288,195 @@ const Sidebar = () => {
           }}
         >
           {menuItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`sidebar-link ${
-                location.pathname === item.path ? "active" : ""
-              }`}
-              onClick={closeSidebar}
-              aria-current={
-                location.pathname === item.path ? "page" : undefined
-              }
-              style={{
-                display: "flex",
-                alignItems: "center",
-                padding: "16px 20px",
-                color: "#ecf0f1",
-                textDecoration: "none",
-                transition: "all 0.3s ease",
-                position: "relative",
-                margin: "2px 10px",
-                borderRadius: "8px",
-                background:
-                  location.pathname === item.path ? " #282828" : "transparent",
-                boxShadow:
-                  location.pathname === item.path ? " #282828" : "none",
-              }}
-              onMouseEnter={(e) => {
-                if (location.pathname !== item.path) {
-                  e.target.style.background = "rgba(255, 255, 255, 0.1)";
-                  e.target.style.transform = "translateX(5px)";
-                  e.target.style.color = "white";
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (location.pathname !== item.path) {
-                  e.target.style.background = "transparent";
-                  e.target.style.transform = "translateX(0)";
-                  e.target.style.color = "#ecf0f1";
-                }
-              }}
-            >
-              <span
-                style={{
-                  marginRight: "12px",
-                  fontSize: "1.3rem",
-                  width: "24px",
-                  textAlign: "center",
-                  transition: "transform 0.2s ease",
-                }}
-              >
-                {item.icon}
-              </span>
-              <span
-                style={{
-                  fontSize: "1rem",
-                  fontWeight: 500,
-                  letterSpacing: "0.5px",
-                }}
-              >
-                {item.label}
-              </span>
-            </Link>
+            <React.Fragment key={item.path}>
+              {item.hasDropdown ? (
+                <>
+                  <button
+                    onClick={toggleDropdown}
+                    className={`sidebar-link ${
+                      location.pathname.startsWith(item.path) ? "active" : ""
+                    }`}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      padding: "16px 20px",
+                      color: "#ecf0f1",
+                      textDecoration: "none",
+                      transition: "all 0.3s ease",
+                      position: "relative",
+                      margin: "2px 10px",
+                      borderRadius: "8px",
+                      border: "none",
+                      background: location.pathname.startsWith(item.path)
+                        ? " #282828"
+                        : "transparent",
+                      cursor: "pointer",
+                      width: "calc(100% - 20px)",
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!location.pathname.startsWith(item.path)) {
+                        e.target.style.background = "rgba(255, 255, 255, 0.1)";
+                        e.target.style.transform = "translateX(5px)";
+                        e.target.style.color = "white";
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!location.pathname.startsWith(item.path)) {
+                        e.target.style.background = "transparent";
+                        e.target.style.transform = "translateX(0)";
+                        e.target.style.color = "#ecf0f1";
+                      }
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                      <span
+                        style={{
+                          marginRight: "12px",
+                          fontSize: "1.3rem",
+                          width: "24px",
+                          textAlign: "center",
+                          transition: "transform 0.2s ease",
+                        }}
+                      >
+                        {item.icon}
+                      </span>
+                      <span
+                        style={{
+                          fontSize: "1rem",
+                          fontWeight: 500,
+                          letterSpacing: "0.5px",
+                        }}
+                      >
+                        {item.label}
+                      </span>
+                    </div>
+                    {dropdownOpen ? <AiOutlineUp /> : <AiOutlineDown />}
+                  </button>
+
+                  {dropdownOpen && (
+                    <div
+                      className="tags-dropdown"
+                      style={{
+                        paddingLeft: "40px",
+                        margin: "5px 10px",
+                        overflow: "hidden",
+                        transition: "max-height 0.3s ease",
+                        maxHeight: dropdownOpen ? "500px" : "0",
+                      }}
+                    >
+                      {tags.map((tag, index) => {
+                        const tagColor = getCategoryColor(tag);
+                        const tagIcon = getCategoryIcon(tag);
+
+                        return (
+                          <Link
+                            key={index}
+                            to={`/tags/${tag.toLowerCase()}`}
+                            className="dropdown-item"
+                            onClick={closeSidebar}
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              padding: "12px 20px",
+                              color: "#bdc3c7",
+                              textDecoration: "none",
+                              transition: "all 0.2s ease",
+                              borderRadius: "6px",
+                              margin: "2px 0",
+                              fontSize: "0.9rem",
+                            }}
+                            onMouseEnter={(e) => {
+                              e.target.style.background =
+                                "rgba(255, 255, 255, 0.05)";
+                              e.target.style.color = "white";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.target.style.background = "transparent";
+                              e.target.style.color = "#bdc3c7";
+                            }}
+                          >
+                            <span
+                              style={{
+                                marginRight: "10px",
+                                color: tagColor,
+                                fontSize: "1rem",
+                                display: "flex",
+                                alignItems: "center",
+                              }}
+                            >
+                              {tagIcon}
+                            </span>
+                            <span>{tag}</span>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <Link
+                  to={item.path}
+                  className={`sidebar-link ${
+                    location.pathname === item.path ? "active" : ""
+                  }`}
+                  onClick={closeSidebar}
+                  aria-current={
+                    location.pathname === item.path ? "page" : undefined
+                  }
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    padding: "16px 20px",
+                    color: "#ecf0f1",
+                    textDecoration: "none",
+                    transition: "all 0.3s ease",
+                    position: "relative",
+                    margin: "2px 10px",
+                    borderRadius: "8px",
+                    background:
+                      location.pathname === item.path
+                        ? " #282828"
+                        : "transparent",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (location.pathname !== item.path) {
+                      e.target.style.background = "rgba(255, 255, 255, 0.1)";
+                      e.target.style.transform = "translateX(5px)";
+                      e.target.style.color = "white";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (location.pathname !== item.path) {
+                      e.target.style.background = "transparent";
+                      e.target.style.transform = "translateX(0)";
+                      e.target.style.color = "#ecf0f1";
+                    }
+                  }}
+                >
+                  <span
+                    style={{
+                      marginRight: "12px",
+                      fontSize: "1.3rem",
+                      width: "24px",
+                      textAlign: "center",
+                      transition: "transform 0.2s ease",
+                    }}
+                  >
+                    {item.icon}
+                  </span>
+                  <span
+                    style={{
+                      fontSize: "1rem",
+                      fontWeight: 500,
+                      letterSpacing: "0.5px",
+                    }}
+                  >
+                    {item.label}
+                  </span>
+                </Link>
+              )}
+            </React.Fragment>
           ))}
         </nav>
       </aside>

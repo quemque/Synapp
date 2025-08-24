@@ -9,7 +9,7 @@ import {
   FaHeart,
   FaEllipsisH,
 } from "react-icons/fa";
-
+import { MdNotificationImportant } from "react-icons/md";
 export default function TaskForm({ onAddTask }) {
   const [inputValue, setInputValue] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("general");
@@ -20,6 +20,12 @@ export default function TaskForm({ onAddTask }) {
 
   const categories = [
     { id: "general", name: "General", icon: <FaEllipsisH />, color: "#6c757d" },
+    {
+      id: "urgent",
+      name: "Urgent",
+      icon: <MdNotificationImportant />,
+      color: "#f1273bff",
+    },
     { id: "home", name: "Home", icon: <FaHome />, color: "#28a745" },
     { id: "work", name: "Work", icon: <FaBriefcase />, color: "#007bff" },
     { id: "study", name: "Study", icon: <FaBook />, color: "#ffc107" },

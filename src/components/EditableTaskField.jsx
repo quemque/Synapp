@@ -10,6 +10,8 @@ import {
   FaTrashAlt,
   FaGripLines,
 } from "react-icons/fa";
+import { MdNotificationImportant } from "react-icons/md";
+
 import { useState } from "react";
 import "./EditableTaskField.css";
 import { useSortable } from "@dnd-kit/sortable";
@@ -54,6 +56,8 @@ export default function EditableTaskField({
         return "#fd7e14";
       case "personal":
         return "#e83e8c";
+      case "urgent":
+        return "#f1273bff";
       default:
         return "#6c757d";
     }
@@ -72,6 +76,8 @@ export default function EditableTaskField({
         return <FaShoppingCart />;
       case "personal":
         return <FaHeart />;
+      case "urgent":
+        return <MdNotificationImportant />;
       default:
         return <FaEllipsisH />;
     }
