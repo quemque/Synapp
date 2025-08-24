@@ -15,6 +15,7 @@ import {
   FaTag,
   FaArrowLeft,
 } from "react-icons/fa";
+import { IoMdAdd, IoMdClose, IoMdSend } from "react-icons/io";
 import {
   DndContext,
   closestCenter,
@@ -192,8 +193,11 @@ const TagsPage = ({
   onDelete,
   onEdit,
   reorderTasks,
+  addTask,
 }) => {
   const { tagName } = useParams();
+  const [isAdding, setIsAdding] = useState(false);
+  const [newTaskText, setNewTaskText] = useState("");
 
   const filteredTasks = tasks.filter((task) => {
     return task.category && task.category === tagName;
@@ -219,6 +223,31 @@ const TagsPage = ({
     }
   };
 
+  const handleAddClick = () => {
+    setIsAdding(true);
+  };
+
+  const handleCancelAdd = () => {
+    setIsAdding(false);
+    setNewTaskText("");
+  };
+
+  const handleSaveNewTask = () => {
+    if (newTaskText.trim()) {
+      addTask(newTaskText.trim(), tagName);
+      setNewTaskText("");
+      setIsAdding(false);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSaveNewTask();
+    } else if (e.key === "Escape") {
+      handleCancelAdd();
+    }
+  };
+
   return (
     <div className="tags-page">
       <div className="tags-header">
@@ -231,18 +260,18 @@ const TagsPage = ({
         </p>
       </div>
 
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-      >
-        <SortableContext
-          items={filteredTasks.map((task) => task.id)}
-          strategy={verticalListSortingStrategy}
+      {filteredTasks.length > 0 ? (
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
         >
-          <div className="tasks-container">
-            {filteredTasks.length > 0 ? (
-              filteredTasks.map((task) => (
+          <SortableContext
+            items={filteredTasks.map((task) => task.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className="tasks-container">
+              {filteredTasks.map((task) => (
                 <TaskItem
                   key={task.id}
                   task={task}
@@ -250,15 +279,54 @@ const TagsPage = ({
                   onDelete={onDelete}
                   onEdit={onEdit}
                 />
-              ))
-            ) : (
-              <div className="no-tasks-message">
-                <p>No tasks found with the category "{tagName}"</p>
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
+      ) : (
+        <p className="no-tasks-message">
+          No tasks found with the category {tagName}
+        </p>
+      )}
+
+      <div className="add-box">
+        <div className="add-content">
+          {!isAdding ? (
+            <button className="button-add-Intag" onClick={handleAddClick}>
+              <IoMdAdd className="add-Intag" /> Add task
+            </button>
+          ) : (
+            <div className="simple-add-container">
+              <input
+                type="text"
+                className="simple-task-input"
+                value={newTaskText}
+                onChange={(e) => setNewTaskText(e.target.value)}
+                onKeyDown={handleKeyPress}
+                autoFocus
+                placeholder="Enter task text..."
+              />
+              <div className="simple-add-buttons">
+                <button
+                  className="simple-send-btn"
+                  onClick={handleSaveNewTask}
+                  disabled={!newTaskText.trim()}
+                  title="Send"
+                >
+                  <IoMdSend style={{ color: "white" }} />
+                </button>
+                <button
+                  className="simple-cancel-btn"
+                  onClick={handleCancelAdd}
+                  title="Cancel"
+                >
+                  <IoMdClose className="icon-close" />
+                </button>
               </div>
-            )}
-          </div>
-        </SortableContext>
-      </DndContext>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

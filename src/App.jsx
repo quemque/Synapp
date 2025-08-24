@@ -48,6 +48,7 @@ function App() {
                   onDelete={deleteTask}
                   onEdit={editTask}
                   reorderTasks={reorderTasks}
+                  addTask={addTask}
                 />
               }
             />

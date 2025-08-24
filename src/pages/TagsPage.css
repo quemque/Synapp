@@ -23,7 +23,40 @@
   margin-right: 10px;
   color: #6c757d;
 }
-
+.simple-send-btn {
+  border: none;
+  background-color: #242424;
+}
+.simple-cancel-btn {
+  border: none;
+  background-color: #242424;
+}
+.simple-task-input {
+  width: 99%;
+  border: none;
+  background-color: #242424;
+  outline: none;
+}
+.add-content {
+  margin-top: 20px;
+}
+.button-add-Intag {
+  width: 100%;
+  display: flex;
+  border: none;
+  background-color: #242424;
+  color: #8d8d8d;
+  align-items: center;
+  font-size: 1rem;
+}
+.add-Intag {
+  color: #fd5045;
+  margin-right: 10px;
+  font-size: 1rem;
+}
+.add-box {
+  border-top: 1px solid #eee;
+}
 .tasks-count {
   color: #6c757d;
   margin: 0;
@@ -32,6 +65,7 @@
 
 .tasks-container {
   margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 .no-tasks-message {
@@ -69,7 +103,12 @@
   .tags-page {
     padding: 15px;
   }
-
+  .simple-send-btn {
+    font-size: 1.5em;
+  }
+  .simple-cancel-btn {
+    font-size: 1.5em;
+  }
   .tags-header h1 {
     font-size: 1.5rem;
   }
