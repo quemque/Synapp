@@ -1,12 +1,11 @@
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
   width: 100%;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  align-items: center;
 }
 
 .text-capital {
@@ -24,29 +23,48 @@ button {
 
 .app-container {
   width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 0 1rem;
+  min-height: 100vh;
+  display: flex;
+  position: relative;
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px;
+  margin-left: 0;
+  max-width: 100%;
+  transition: margin-left 0.3s ease;
+  min-height: 100vh;
   box-sizing: border-box;
 }
 
+/* Mobile styles */
 @media (max-width: 768px) {
-  #root {
-    padding: 1rem;
+  .main-content {
+    padding: 15px;
+    margin-top: 60px; /* Space for burger button */
   }
+}
 
-  .text-capital {
-    font-size: 2.5em;
+/* Desktop styles - sidebar always visible */
+@media (min-width: 1024px) {
+  .main-content {
+    margin-left: 250px;
+    max-width: calc(100% - 250px);
+  }
+}
+
+/* Large screens */
+@media (min-width: 1200px) {
+  .main-content {
+    margin-left: 280px;
+    max-width: calc(100% - 280px);
   }
 }
 
 @media (max-width: 480px) {
-  #root {
-    padding: 0.5rem;
-  }
-
-  .text-capital {
-    font-size: 2em;
-    margin-bottom: 1.5rem;
+  .main-content {
+    padding: 10px;
+    margin-top: 50px;
   }
 }

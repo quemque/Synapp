@@ -74,7 +74,7 @@ export default function TaskForm({ onAddTask }) {
   );
 
   return (
-    <div>
+    <div className="rForm">
       <form onSubmit={handleSubmit} className="form-items">
         <div className="category-selector">
           <button

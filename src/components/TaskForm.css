@@ -1,11 +1,14 @@
 .form-items {
+  width: 60%;
   display: flex;
   align-items: center;
   gap: 12px;
   position: relative;
-  width: 100%;
 }
-
+.rForm {
+  display: flex;
+  justify-content: center;
+}
 .category-selector {
   position: relative;
   display: flex;
@@ -94,7 +97,7 @@
 }
 
 .task-input:focus {
-  border-color: #007bff;
+  border-color: grey;
 }
 
 .task-input-button {
@@ -117,7 +120,7 @@
 }
 
 .task-input-button:hover {
-  border-color: #0056b3;
+  border-color: grey;
 }
 
 .icon-submit {
@@ -161,6 +164,7 @@
 @media (max-width: 768px) {
   .form-items {
     gap: 10px;
+    width: 100%;
   }
 
   .task-input {
@@ -170,26 +174,28 @@
   }
 
   .category-button {
-    height: 45px;
-    width: 45px;
-    font-size: 18px;
-    padding: 10px;
-  }
+    .form-items {
+      height: 45px;
+      width: 45px;
+      font-size: 18px;
+      padding: 10px;
+    }
 
-  .task-input-button {
-    height: 55px;
-    width: 55px;
-  }
+    .task-input-button {
+      height: 55px;
+      width: 55px;
+    }
 
-  .icon-submit {
-    font-size: 20px;
+    .icon-submit {
+      font-size: 20px;
+    }
   }
 }
-
 @media (max-width: 480px) {
   .form-items {
     gap: 8px;
     flex-wrap: wrap;
+    width: 100%;
   }
 
   .task-input {
@@ -224,7 +230,6 @@
   }
 
   .category-menu {
-    left: -50px;
     min-width: 140px;
   }
 }

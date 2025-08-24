@@ -104,63 +104,65 @@ export default function EditableTaskField({
   };
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      className={`task-item ${task.completed ? "completed" : ""}`}
-    >
-      <div className="drag-handle-container">
-        <FaGripLines className="drag-handle-icon" {...listeners} />
-      </div>
+    <div className="task-items">
       <div
-        title="Complete task"
-        className="task-status"
-        onClick={() => onToggleComplete(task.id)}
+        ref={setNodeRef}
+        style={style}
+        {...attributes}
+        className={`task-item ${task.completed ? "completed" : ""}`}
       >
-        {task.completed ? (
-          <FaCheckCircle className="icon completed-icon" />
+        <div className="drag-handle-container">
+          <FaGripLines className="drag-handle-icon" {...listeners} />
+        </div>
+        <div
+          title="Complete task"
+          className="task-status"
+          onClick={() => onToggleComplete(task.id)}
+        >
+          {task.completed ? (
+            <FaCheckCircle className="icon completed-icon" />
+          ) : (
+            <FaRegCircle className="icon incomplete-icon" />
+          )}
+        </div>
+
+        <div
+          className="task-category"
+          style={{ color: getCategoryColor(taskCategory) }}
+          title={getCategoryName(taskCategory)}
+        >
+          {getCategoryIcon(taskCategory)}
+        </div>
+
+        {isEditing ? (
+          <input
+            type="text"
+            className="task-edit-input"
+            value={editText}
+            onChange={(e) => setEditText(e.target.value)}
+            onBlur={handleSave}
+            onKeyDown={handleKeyPress}
+            autoFocus
+          />
         ) : (
-          <FaRegCircle className="icon incomplete-icon" />
+          <span
+            className="task-text"
+            onDoubleClick={handleDoubleClick}
+            title="Double click to edit"
+          >
+            {task.text}
+          </span>
         )}
-      </div>
 
-      <div
-        className="task-category"
-        style={{ color: getCategoryColor(taskCategory) }}
-        title={getCategoryName(taskCategory)}
-      >
-        {getCategoryIcon(taskCategory)}
-      </div>
-
-      {isEditing ? (
-        <input
-          type="text"
-          className="task-edit-input"
-          value={editText}
-          onChange={(e) => setEditText(e.target.value)}
-          onBlur={handleSave}
-          onKeyDown={handleKeyPress}
-          autoFocus
-        />
-      ) : (
-        <span
-          className="task-text"
-          onDoubleClick={handleDoubleClick}
-          title="Double click to edit"
-        >
-          {task.text}
-        </span>
-      )}
-
-      <div className="task-actions">
-        <button
-          className="delete-btn"
-          onClick={() => onDelete(task.id)}
-          title="Delete task"
-        >
-          <FaTrashAlt className="icon trash-icon" />
-        </button>
+        <div className="task-actions">
+          <button
+            className="delete-btn"
+            onClick={() => onDelete(task.id)}
+            title="Delete task"
+          >
+            <FaTrashAlt className="icon trash-icon" />
+          </button>
+        </div>
       </div>
     </div>
   );
