@@ -1,4 +1,3 @@
-/* Minimal sidebar styles */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -8,7 +7,6 @@
   }
 }
 
-/* Mobile responsive adjustments */
 @media (max-width: 768px) {
   .burger-button {
     top: 10px !important;
@@ -18,8 +16,6 @@
   }
 }
 
-/* Desktop - always visible sidebar */
-/*1024*/
 @media (min-width: 1024px) {
   .burger-button {
     display: none !important;

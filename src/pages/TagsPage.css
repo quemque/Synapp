@@ -1,0 +1,81 @@
+.tags-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.tags-header {
+  margin-bottom: 30px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 20px;
+}
+
+.tags-header h1 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+  margin: 0 0 10px 0;
+}
+
+.tag-header-icon {
+  margin-right: 10px;
+  color: #6c757d;
+}
+
+.tasks-count {
+  color: #6c757d;
+  margin: 0;
+  font-style: italic;
+}
+
+.tasks-container {
+  margin-top: 20px;
+}
+
+.no-tasks-message {
+  text-align: center;
+  padding: 40px;
+  color: #6c757d;
+  font-style: italic;
+}
+
+.task-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-left: 15px;
+}
+
+.task-tag {
+  display: inline-flex;
+  align-items: center;
+  background-color: #f0f8ff;
+  color: #007bff;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.tag-icon {
+  margin-right: 4px;
+  font-size: 0.7rem;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .tags-page {
+    padding: 15px;
+  }
+
+  .tags-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .task-tags {
+    margin-left: 0;
+    margin-top: 8px;
+  }
+}

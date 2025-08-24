@@ -39,8 +39,18 @@ function App() {
                 />
               }
             />
-            <Route path="/tags" element={<TagsPage tasks={tasks} />} />
-            <Route path="/tags/:tagName" element={<TagsPage tasks={tasks} />} />
+            <Route
+              path="/tags/:tagName"
+              element={
+                <TagsPage
+                  tasks={tasks}
+                  onToggleComplete={toggleTask}
+                  onDelete={deleteTask}
+                  onEdit={editTask}
+                  reorderTasks={reorderTasks}
+                />
+              }
+            />
           </Routes>
         </main>
       </div>
