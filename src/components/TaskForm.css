@@ -35,8 +35,7 @@
 }
 
 .category-button:hover {
-  background-color: #a0aec0;
-  border-color: #a0aec0;
+  border-color: grey;
   color: #242424;
 }
 

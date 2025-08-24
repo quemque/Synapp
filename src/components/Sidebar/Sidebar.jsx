@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { AiOutlineClose } from "react-icons/ai";
 import { FaTasks, FaTags } from "react-icons/fa";
 import "./Sidebar.css";
 
@@ -203,7 +204,7 @@ const Sidebar = () => {
               background: "rgba(255, 255, 255, 0.1)",
               border: "none",
               color: "#ecf0f1",
-              fontSize: "1.8rem",
+              fontSize: "1.5rem",
               cursor: "pointer",
               padding: 0,
               width: "32px",
@@ -215,18 +216,15 @@ const Sidebar = () => {
               transition: "all 0.3s ease",
               backdropFilter: "blur(10px)",
             }}
-            onMouseEnter={(e) => {
-              e.target.style.background = "rgba(255, 255, 255, 0.2)";
-              e.target.style.transform = "scale(1.1)";
-              e.target.style.color = "white";
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.background = "rgba(255, 255, 255, 0.1)";
-              e.target.style.transform = "scale(1)";
-              e.target.style.color = "#ecf0f1";
-            }}
           >
-            ×
+            <AiOutlineClose
+              style={{
+                borderRadius: "50%",
+                backgroundColor: "transparent",
+                border: "none",
+                outline: "none",
+              }}
+            />
           </button>
         </div>
 
