@@ -1,12 +1,32 @@
 import "./App.css";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import Sidebar from "./components/Sidebar/Sidebar.jsx";
 import HomePage from "./pages/HomePage.jsx";
 import TagsPage from "./pages/TagsPage.jsx";
-import LoginPage from "./pages/LoginPage.jsx"; // Добавьте этот импорт
+import LoginPage from "./pages/LoginPage.jsx";
+import RegisterPage from "../src/components/Auth/Register.jsx";
 import { useTask } from "./hooks/useTask.jsx";
+import { AuthProvider, useAuth } from "./context/AuthContext.jsx";
 
-function App() {
+// Компонент для публичных маршрутов (логин/регистрация)
+const PublicRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+
+  console.log("PublicRoute - user:", user);
+
+  if (loading) {
+    return <div className="loading">Loading...</div>;
+  }
+
+  return !user ? children : <Navigate to="/" replace />;
+};
+
+function AppContent() {
   const {
     tasks,
     addTask,
@@ -19,46 +39,69 @@ function App() {
   } = useTask();
 
   return (
-    <Router>
-      <div className="app-container">
-        <Sidebar />
+    <div className="app-container">
+      <Sidebar />
+      <main className="main-content">
+        <Routes>
+          <Route
+            path="/login"
+            element={
+              <PublicRoute>
+                <LoginPage />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <PublicRoute>
+                <RegisterPage />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/"
+            element={
+              <HomePage
+                tasks={tasks}
+                addTask={addTask}
+                deleteTask={deleteTask}
+                toggleTask={toggleTask}
+                toggleClean={toggleClean}
+                toggleFilter={toggleFilter}
+                editTask={editTask}
+                reorderTasks={reorderTasks}
+              />
+            }
+          />
+          <Route
+            path="/tags/:tagName"
+            element={
+              <TagsPage
+                tasks={tasks}
+                onToggleComplete={toggleTask}
+                onDelete={deleteTask}
+                onEdit={editTask}
+                reorderTasks={reorderTasks}
+                addTask={addTask}
+              />
+            }
+          />
+          {/* Fallback route */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </main>
+    </div>
+  );
+}
 
-        <main className="main-content">
-          <Routes>
-            <Route path="/login" element={<LoginPage />} />{" "}
-            {/* Добавьте этот маршрут */}
-            <Route
-              path="/"
-              element={
-                <HomePage
-                  tasks={tasks}
-                  addTask={addTask}
-                  deleteTask={deleteTask}
-                  toggleTask={toggleTask}
-                  toggleClean={toggleClean}
-                  toggleFilter={toggleFilter}
-                  editTask={editTask}
-                  reorderTasks={reorderTasks}
-                />
-              }
-            />
-            <Route
-              path="/tags/:tagName"
-              element={
-                <TagsPage
-                  tasks={tasks}
-                  onToggleComplete={toggleTask}
-                  onDelete={deleteTask}
-                  onEdit={editTask}
-                  reorderTasks={reorderTasks}
-                  addTask={addTask}
-                />
-              }
-            />
-          </Routes>
-        </main>
-      </div>
-    </Router>
+function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <AppContent />
+      </Router>
+    </AuthProvider>
   );
 }
 

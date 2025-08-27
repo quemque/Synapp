@@ -15,18 +15,28 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Проверяем есть ли токен при загрузке
+    // Проверяем есть ли токен и пользователь при загрузке
     const token = localStorage.getItem("token");
     const userData = localStorage.getItem("user");
 
+    console.log("AuthProvider useEffect - token:", token);
+    console.log("AuthProvider useEffect - userData:", userData);
+
     if (token && userData) {
-      setUser(JSON.parse(userData));
+      try {
+        setUser(JSON.parse(userData));
+      } catch (error) {
+        console.error("Error parsing user data:", error);
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+      }
     }
     setLoading(false);
   }, []);
 
   const login = async (email, password) => {
     try {
+      console.log("Login attempt with:", email);
       const response = await fetch("http://localhost:3001/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -34,6 +44,7 @@ export const AuthProvider = ({ children }) => {
       });
 
       const data = await response.json();
+      console.log("Login response:", data);
 
       if (data.success) {
         localStorage.setItem("token", data.token);
@@ -44,13 +55,14 @@ export const AuthProvider = ({ children }) => {
         return { success: false, message: data.message };
       }
     } catch (error) {
-      console.error(error.message());
+      console.error("Login error:", error);
       return { success: false, message: "Network error" };
     }
   };
 
   const register = async (username, email, password) => {
     try {
+      console.log("Register attempt with:", { username, email });
       const response = await fetch("http://localhost:3001/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -58,6 +70,7 @@ export const AuthProvider = ({ children }) => {
       });
 
       const data = await response.json();
+      console.log("Register response:", data);
 
       if (data.success) {
         localStorage.setItem("token", data.token);
@@ -68,12 +81,13 @@ export const AuthProvider = ({ children }) => {
         return { success: false, message: data.message };
       }
     } catch (error) {
-      console.error(error.message());
+      console.error("Register error:", error);
       return { success: false, message: "Network error" };
     }
   };
 
   const logout = () => {
+    console.log("Logging out");
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setUser(null);

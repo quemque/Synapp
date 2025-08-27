@@ -11,8 +11,11 @@ import {
   FaHeart,
   FaEllipsisH,
   FaSignInAlt,
+  FaUser,
+  FaSignOutAlt,
 } from "react-icons/fa";
 import { MdNotificationImportant } from "react-icons/md";
+import { useAuth } from "../../context/AuthContext"; // Импортируем useAuth
 import "./Sidebar.css";
 
 const Sidebar = () => {
@@ -20,6 +23,9 @@ const Sidebar = () => {
   const location = useLocation();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const tags = ["Urgent", "Home", "Work", "Study", "Shopping", "Personal"];
+
+  // Получаем данные пользователя и функцию logout из контекста
+  const { user, logout } = useAuth();
 
   const mainMenuItems = [
     { path: "/", label: "All tasks", icon: <FaTasks /> },
@@ -31,9 +37,17 @@ const Sidebar = () => {
     },
   ];
 
-  const bottomMenuItems = [
-    { path: "/login", label: "Login", icon: <FaSignInAlt /> },
-  ];
+  // Динамически меняем пункты меню в зависимости от авторизации
+  const bottomMenuItems = user
+    ? [
+        {
+          path: "#logout",
+          label: "Logout",
+          icon: <FaSignOutAlt />,
+          action: logout, // Добавляем действие для выхода
+        },
+      ]
+    : [{ path: "/login", label: "Login", icon: <FaSignInAlt /> }];
 
   // Функция для получения цвета категории
   const getCategoryColor = (category) => {
@@ -105,12 +119,10 @@ const Sidebar = () => {
   }, [isOpen]);
 
   const toggleSidebar = () => {
-    console.log("Toggle sidebar clicked, current state:", isOpen);
     setIsOpen(!isOpen);
   };
 
   const closeSidebar = () => {
-    console.log("Close sidebar clicked");
     setIsOpen(false);
     setDropdownOpen(false);
   };
@@ -123,6 +135,13 @@ const Sidebar = () => {
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
+  };
+
+  const handleMenuItemClick = (item) => {
+    if (item.action) {
+      item.action(); // Выполняем действие (например, logout)
+      closeSidebar();
+    }
   };
 
   const renderMenuItem = (item) => {
@@ -252,7 +271,62 @@ const Sidebar = () => {
           )}
         </>
       );
+    } else if (item.action) {
+      // Для кнопок с действиями (например, Logout)
+      return (
+        <button
+          onClick={() => handleMenuItemClick(item)}
+          className="sidebar-link"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            padding: "16px 20px",
+            color: "#ecf0f1",
+            textDecoration: "none",
+            transition: "all 0.3s ease",
+            position: "relative",
+            margin: "2px 10px",
+            borderRadius: "8px",
+            border: "none",
+            background: "transparent",
+            cursor: "pointer",
+            width: "calc(100% - 20px)",
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.background = "rgba(255, 255, 255, 0.1)";
+            e.target.style.transform = "translateX(5px)";
+            e.target.style.color = "white";
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.background = "transparent";
+            e.target.style.transform = "translateX(0)";
+            e.target.style.color = "#ecf0f1";
+          }}
+        >
+          <span
+            style={{
+              marginRight: "12px",
+              fontSize: "1.3rem",
+              width: "24px",
+              textAlign: "center",
+              transition: "transform 0.2s ease",
+            }}
+          >
+            {item.icon}
+          </span>
+          <span
+            style={{
+              fontSize: "1rem",
+              fontWeight: 500,
+              letterSpacing: "0.5px",
+            }}
+          >
+            {item.label}
+          </span>
+        </button>
+      );
     } else {
+      // Для обычных ссылок
       return (
         <Link
           to={item.path}
@@ -475,6 +549,43 @@ const Sidebar = () => {
           </button>
         </div>
 
+        {/* Блок информации о пользователе */}
+        {user && (
+          <div
+            style={{
+              padding: "20px",
+              borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+              background: "rgba(0, 0, 0, 0.1)",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginBottom: "10px",
+              }}
+            >
+              <FaUser style={{ marginRight: "10px", color: "#fd5045" }} />
+              <span style={{ fontWeight: "500" }}>Logged in as:</span>
+            </div>
+            <div
+              style={{
+                fontSize: "1.1rem",
+                fontWeight: "600",
+                color: "#ecf0f1",
+              }}
+            >
+              {user.username}
+            </div>
+            <div
+              style={{ fontSize: "0.9rem", color: "#bdc3c7", marginTop: "5px" }}
+            >
+              {user.email}
+            </div>
+          </div>
+        )}
+
+        {/* Основное меню */}
         <nav
           style={{
             display: "flex",
@@ -490,6 +601,7 @@ const Sidebar = () => {
           ))}
         </nav>
 
+        {/* Нижнее меню (Login/Logout) */}
         <div
           style={{
             marginTop: "auto",
@@ -504,7 +616,7 @@ const Sidebar = () => {
             }}
           >
             {bottomMenuItems.map((item) => (
-              <React.Fragment key={item.path}>
+              <React.Fragment key={item.path || item.label}>
                 {renderMenuItem(item)}
               </React.Fragment>
             ))}

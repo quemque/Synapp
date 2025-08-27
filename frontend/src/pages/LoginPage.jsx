@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { Link, useNavigate } from "react-router-dom";
 import { FaUser, FaLock, FaArrowRight, FaUserPlus } from "react-icons/fa";
 import "./LoginPage.css";
 
@@ -8,6 +9,11 @@ const LoginPage = () => {
     email: "",
     password: "",
   });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -17,9 +23,19 @@ const LoginPage = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login attempt:", formData);
+    setLoading(true);
+    setError("");
+
+    const result = await login(formData.email, formData.password);
+
+    if (result.success) {
+      navigate("/");
+    } else {
+      setError(result.message);
+    }
+    setLoading(false);
   };
 
   return (
@@ -31,6 +47,8 @@ const LoginPage = () => {
           </h1>
           <p className="login-subtitle">Sign in to your account to continue</p>
         </div>
+
+        {error && <div className="error-message">{error}</div>}
 
         <form className="login-form" onSubmit={handleSubmit}>
           <div className="form-group">
@@ -71,8 +89,8 @@ const LoginPage = () => {
             </div>
           </div>
 
-          <button type="submit" className="login-button">
-            <span>Sign In</span>
+          <button type="submit" className="login-button" disabled={loading}>
+            <span>{loading ? "Signing In..." : "Sign In"}</span>
             <FaArrowRight className="button-icon" />
           </button>
         </form>
