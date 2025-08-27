@@ -1,6 +1,6 @@
 import React from "react";
-import TaskForm from "../components/TaskForm";
-import EditableTaskField from "../components/EditableTaskField";
+import TaskForm from "../components/TaskForm.jsx";
+import EditableTaskField from "../components/EditableTaskField.jsx";
 import Buttons from "../components/Buttons.jsx";
 import {
   DndContext,

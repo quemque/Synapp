@@ -1,8 +1,9 @@
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Sidebar from "./components/Sidebar/Sidebar";
-import HomePage from "./pages/HomePage";
-import TagsPage from "./pages/TagsPage";
+import Sidebar from "./components/Sidebar/Sidebar.jsx";
+import HomePage from "./pages/HomePage.jsx";
+import TagsPage from "./pages/TagsPage.jsx";
+import LoginPage from "./pages/LoginPage.jsx"; // Добавьте этот импорт
 import { useTask } from "./hooks/useTask.jsx";
 
 function App() {
@@ -24,6 +25,8 @@ function App() {
 
         <main className="main-content">
           <Routes>
+            <Route path="/login" element={<LoginPage />} />{" "}
+            {/* Добавьте этот маршрут */}
             <Route
               path="/"
               element={
