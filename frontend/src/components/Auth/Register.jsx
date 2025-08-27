@@ -8,7 +8,7 @@ import {
   FaArrowRight,
   FaSignInAlt,
 } from "react-icons/fa";
-import "../../pages/LoginPage.css";
+import "./LoginPage.css";
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({

@@ -1,12 +1,18 @@
 import React, { useState } from "react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../../context/AuthContext.jsx";
 import { Link, useNavigate } from "react-router-dom";
-import { FaUser, FaLock, FaArrowRight, FaUserPlus } from "react-icons/fa";
+import {
+  FaUser,
+  FaEnvelope,
+  FaLock,
+  FaArrowRight,
+  FaUserPlus,
+} from "react-icons/fa";
 import "./LoginPage.css";
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
-    email: "",
+    loginIdentifier: "",
     password: "",
   });
   const [error, setError] = useState("");
@@ -28,7 +34,7 @@ const LoginPage = () => {
     setLoading(true);
     setError("");
 
-    const result = await login(formData.email, formData.password);
+    const result = await login(formData.loginIdentifier, formData.password);
 
     if (result.success) {
       navigate("/");
@@ -52,19 +58,19 @@ const LoginPage = () => {
 
         <form className="login-form" onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="email" className="form-label">
-              Email Address
+            <label htmlFor="loginIdentifier" className="form-label">
+              Email or Username
             </label>
             <div className="input-container">
-              <FaUser className="input-icon" />
+              <FaEnvelope className="input-icon" />
               <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
+                type="text"
+                id="loginIdentifier"
+                name="loginIdentifier"
+                value={formData.loginIdentifier}
                 onChange={handleInputChange}
                 className="form-input"
-                placeholder="Enter your email"
+                placeholder="Enter your email or username"
                 required
               />
             </div>

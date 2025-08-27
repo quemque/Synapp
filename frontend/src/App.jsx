@@ -8,12 +8,11 @@ import {
 import Sidebar from "./components/Sidebar/Sidebar.jsx";
 import HomePage from "./pages/HomePage.jsx";
 import TagsPage from "./pages/TagsPage.jsx";
-import LoginPage from "./pages/LoginPage.jsx";
+import LoginPage from "../src/components/Auth/LoginPage.jsx";
 import RegisterPage from "../src/components/Auth/Register.jsx";
 import { useTask } from "./hooks/useTask.jsx";
 import { AuthProvider, useAuth } from "./context/AuthContext.jsx";
 
-// Компонент для публичных маршрутов (логин/регистрация)
 const PublicRoute = ({ children }) => {
   const { user, loading } = useAuth();
 
