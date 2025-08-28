@@ -16,8 +16,6 @@ import { AuthProvider, useAuth } from "./context/AuthContext.jsx";
 const PublicRoute = ({ children }) => {
   const { user, loading } = useAuth();
 
-  console.log("PublicRoute - user:", user);
-
   if (loading) {
     return <div className="loading">Loading...</div>;
   }
