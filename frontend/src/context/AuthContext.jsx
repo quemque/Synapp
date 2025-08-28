@@ -64,7 +64,7 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (username, email, password) => {
     try {
-      const response = await fetch(API_URL, {
+      const response = await fetch(`${API_URL}/api/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -72,6 +72,12 @@ export const AuthProvider = ({ children }) => {
         },
         body: JSON.stringify({ username, email, password }),
       });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Server response error:", errorText);
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
       const data = await response.json();
 
@@ -85,10 +91,12 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       console.error("Register error:", error);
-      return { success: false, message: "Network error" };
+      return {
+        success: false,
+        message: error.message || "Network error",
+      };
     }
   };
-
   const logout = () => {
     console.log("Logging out");
     localStorage.removeItem("token");
