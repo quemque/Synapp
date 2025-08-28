@@ -15,12 +15,8 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Проверяем есть ли токен и пользователь при загрузке
     const token = localStorage.getItem("token");
     const userData = localStorage.getItem("user");
-
-    console.log("AuthProvider useEffect - token:", token);
-    console.log("AuthProvider useEffect - userData:", userData);
 
     if (token && userData) {
       try {
@@ -34,17 +30,21 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const login = async (email, password) => {
+  const login = async (loginIdentifier, password) => {
     try {
-      console.log("Login attempt with:", email);
       const response = await fetch("http://localhost:3001/api/auth/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          loginIdentifier: loginIdentifier,
+          password: password,
+        }),
       });
 
       const data = await response.json();
-      console.log("Login response:", data);
 
       if (data.success) {
         localStorage.setItem("token", data.token);
@@ -62,15 +62,16 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (username, email, password) => {
     try {
-      console.log("Register attempt with:", { username, email });
       const response = await fetch("http://localhost:3001/api/auth/register", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
         body: JSON.stringify({ username, email, password }),
       });
 
       const data = await response.json();
-      console.log("Register response:", data);
 
       if (data.success) {
         localStorage.setItem("token", data.token);
