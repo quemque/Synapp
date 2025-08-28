@@ -34,7 +34,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (loginIdentifier, password) => {
     try {
-      const response = await fetch(API_URL, {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -45,6 +45,12 @@ export const AuthProvider = ({ children }) => {
           password: password,
         }),
       });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Login error response:", errorText);
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
       const data = await response.json();
 
@@ -58,7 +64,10 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       console.error("Login error:", error);
-      return { success: false, message: "Network error" };
+      return {
+        success: false,
+        message: error.message || "Network error",
+      };
     }
   };
 
