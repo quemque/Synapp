@@ -1,0 +1,11 @@
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "cd backend && npm start"
+rootDirectory = "backend"
+
+[env]
+MONGODB_URI = "mongodb://username:password@hopper.proxy.rlwy.net:31975/mydatabase"
+JWT_SECRET = "your-super-secret-jwt-key-here"
+NODE_ENV = "production"
