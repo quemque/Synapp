@@ -1,4 +1,4 @@
-# .gitignore в корне backend/
+
 .env
 .env.local
 .env.development
@@ -7,7 +7,7 @@
 *.env
 .env.*
 
-# Также добавьте
+
 node_modules/
 dist/
 build/
