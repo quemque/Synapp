@@ -19,28 +19,34 @@ const allowedOrigins = [
 
 app.use(
   cors({
-    origin: function (origin, callback) {
-      // Разрешаем запросы без origin (curl, postman)
-      if (!origin) return callback(null, true);
-
-      if (
-        allowedOrigins.some((allowedOrigin) => {
-          return (
-            origin === allowedOrigin ||
-            origin.endsWith(allowedOrigin.replace("*", ""))
-          );
-        })
-      ) {
-        callback(null, true);
-      } else {
-        console.log("CORS blocked for origin:", origin);
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: "*", // Разрешаем все домены временно
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "Accept"],
   })
+  // cors({
+  //   origin: function (origin, callback) {
+  //     // Разрешаем запросы без origin (curl, postman)
+  //     if (!origin) return callback(null, true);
+
+  //     if (
+  //       allowedOrigins.some((allowedOrigin) => {
+  //         return (
+  //           origin === allowedOrigin ||
+  //           origin.endsWith(allowedOrigin.replace("*", ""))
+  //         );
+  //       })
+  //     ) {
+  //       callback(null, true);
+  //     } else {
+  //       console.log("CORS blocked for origin:", origin);
+  //       callback(new Error("Not allowed by CORS"));
+  //     }
+  //   },
+  //   credentials: true,
+  //   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  //   allowedHeaders: ["Content-Type", "Authorization", "Accept"],
+  // })
 );
 
 app.use(express.json());
