@@ -8,10 +8,8 @@ COPY package*.json ./
 # Устанавливаем зависимости
 RUN npm install --only=production
 
-# Копируем исходный код
+# Копируем исходный код (ИСКЛЮЧАЕМ .env)
 COPY src/ ./src/
-# Копируем .env файл
-COPY .env ./
 
 # Создаем пользователя для безопасности
 RUN addgroup -g 1001 -S nodejs && \
