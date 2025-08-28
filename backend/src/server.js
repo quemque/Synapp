@@ -9,44 +9,36 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Настройка CORS для продакшена
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://todo-react-navy-omega.vercel.app/",
+  "https://todo-react-navy-omega.vercel.app",
   "https://*.vercel.app",
   "https://*.railway.app",
 ];
 
 app.use(
   cors({
-    origin: "*", // Разрешаем все домены временно
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+
+      if (
+        allowedOrigins.some((allowedOrigin) => {
+          return (
+            origin === allowedOrigin ||
+            origin.includes(allowedOrigin.replace("*", ""))
+          );
+        })
+      ) {
+        callback(null, true);
+      } else {
+        console.log("CORS blocked for origin:", origin);
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "Accept"],
   })
-  // cors({
-  //   origin: function (origin, callback) {
-  //     // Разрешаем запросы без origin (curl, postman)
-  //     if (!origin) return callback(null, true);
-
-  //     if (
-  //       allowedOrigins.some((allowedOrigin) => {
-  //         return (
-  //           origin === allowedOrigin ||
-  //           origin.endsWith(allowedOrigin.replace("*", ""))
-  //         );
-  //       })
-  //     ) {
-  //       callback(null, true);
-  //     } else {
-  //       console.log("CORS blocked for origin:", origin);
-  //       callback(new Error("Not allowed by CORS"));
-  //     }
-  //   },
-  //   credentials: true,
-  //   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  //   allowedHeaders: ["Content-Type", "Authorization", "Accept"],
-  // })
 );
 
 app.use(express.json());
