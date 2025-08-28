@@ -7,7 +7,15 @@ const router = express.Router();
 
 const getJwtSecret = () => {
   const secret = process.env.JWT_SECRET;
-  return secret || "fallback-secret-key-change-in-production";
+
+  if (!secret) {
+    throw new Error(
+      "JWT_SECRET is not defined. " +
+        "Please set it in Vercel environment variables or local .env file"
+    );
+  }
+
+  return secret;
 };
 
 // Логин по email ИЛИ username - ИСПРАВЛЕННАЯ ВЕРСИЯ

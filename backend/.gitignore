@@ -1,0 +1,15 @@
+# .gitignore в корне backend/
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+*.env
+.env.*
+
+# Также добавьте
+node_modules/
+dist/
+build/
+*.log
+.DS_Store
