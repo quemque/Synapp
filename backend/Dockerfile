@@ -9,7 +9,7 @@ COPY package*.json ./
 RUN npm install --only=production
 
 # Копируем исходный код (ИСКЛЮЧАЕМ .env)
-COPY src/ ./src/
+COPY . ./
 
 # Создаем пользователя для безопасности
 RUN addgroup -g 1001 -S nodejs && \
