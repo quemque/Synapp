@@ -1,112 +1,115 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { arrayMove } from "@dnd-kit/sortable";
+import { useAuth } from "../context/AuthContext";
 
 export function useTask() {
   const [tasks, setTasks] = useState([]);
   const nextIdRef = useRef(1);
+  const { user, userTasks, saveUserTasks, isAuthenticated } = useAuth();
 
   useEffect(() => {
-    const savedTasks = localStorage.getItem("taskfield");
-    if (savedTasks) {
-      try {
-        const parsedTasks = JSON.parse(savedTasks);
-        const validTasks = parsedTasks.filter(
-          (task) => task && typeof task.id === "number" && !isNaN(task.id)
-        );
-        setTasks(validTasks);
+    if (isAuthenticated && user) {
+      setTasks(userTasks);
+    } else {
+      const savedTasks = localStorage.getItem("taskfield");
+      if (savedTasks) {
+        try {
+          const parsedTasks = JSON.parse(savedTasks);
+          const validTasks = parsedTasks.filter(
+            (task) => task && typeof task.id === "number" && !isNaN(task.id)
+          );
+          setTasks(validTasks);
 
-        if (validTasks.length > 0) {
-          const maxId = Math.max(...validTasks.map((task) => task.id));
-          nextIdRef.current = maxId + 1;
-        } else {
+          if (validTasks.length > 0) {
+            const maxId = Math.max(...validTasks.map((task) => task.id));
+            nextIdRef.current = maxId + 1;
+          } else {
+            nextIdRef.current = 1;
+          }
+        } catch (error) {
+          console.error("Error parsing tasks from localStorage:", error);
+          setTasks([]);
           nextIdRef.current = 1;
         }
-      } catch (error) {
-        console.error("Error parsing tasks from localStorage:", error);
-        setTasks([]);
-        nextIdRef.current = 1;
       }
     }
-  }, []);
+  }, [isAuthenticated, user, userTasks]);
 
-  const addTask = (text, category = "general") => {
-    setTasks((prevTasks) => {
-      if (typeof nextIdRef.current !== "number" || isNaN(nextIdRef.current)) {
-        nextIdRef.current = 1;
+  const saveTasks = useCallback(
+    async (updatedTasks) => {
+      if (isAuthenticated && user) {
+        // Сохраняем в облако
+        await saveUserTasks(user.id, updatedTasks);
+      } else {
+        localStorage.setItem("taskfield", JSON.stringify(updatedTasks));
       }
+      setTasks(updatedTasks);
+    },
+    [isAuthenticated, user, saveUserTasks]
+  );
 
-      const newTask = {
-        id: nextIdRef.current,
-        text,
-        category,
-        completed: false,
-      };
-      const updatedTasks = [...prevTasks, newTask];
-      localStorage.setItem("taskfield", JSON.stringify(updatedTasks));
-      nextIdRef.current += 1;
-      return updatedTasks;
-    });
+  const addTask = async (text, category = "general") => {
+    if (typeof nextIdRef.current !== "number" || isNaN(nextIdRef.current)) {
+      nextIdRef.current = 1;
+    }
+
+    const newTask = {
+      id: nextIdRef.current,
+      text,
+      category,
+      completed: false,
+    };
+
+    const updatedTasks = [...tasks, newTask];
+    await saveTasks(updatedTasks);
+    nextIdRef.current += 1;
   };
 
-  const deleteTask = (id) => {
-    setTasks((prevTasks) => {
-      const updatedTasks = prevTasks.filter((task) => task.id !== id);
-      localStorage.setItem("taskfield", JSON.stringify(updatedTasks));
-      return updatedTasks;
-    });
+  const deleteTask = async (id) => {
+    const updatedTasks = tasks.filter((task) => task.id !== id);
+    await saveTasks(updatedTasks);
   };
 
-  const toggleTask = (id) => {
-    setTasks((prevTasks) => {
-      const updatedTasks = prevTasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      );
-      localStorage.setItem("taskfield", JSON.stringify(updatedTasks));
-      return updatedTasks;
-    });
+  const toggleTask = async (id) => {
+    const updatedTasks = tasks.map((task) =>
+      task.id === id ? { ...task, completed: !task.completed } : task
+    );
+    await saveTasks(updatedTasks);
   };
 
-  const toggleClean = () => {
-    setTasks([]);
-    localStorage.setItem("taskfield", JSON.stringify([]));
+  const toggleClean = async () => {
+    await saveTasks([]);
   };
 
-  const toggleFilter = () => {
-    setTasks((prevTasks) => {
-      const updatedTasks = prevTasks.filter((task) => task.completed !== true);
-      localStorage.setItem("taskfield", JSON.stringify(updatedTasks));
-      return updatedTasks;
-    });
+  const toggleFilter = async () => {
+    const updatedTasks = tasks.filter((task) => task.completed !== true);
+    await saveTasks(updatedTasks);
   };
 
-  const resetApp = () => {
-    setTasks([]);
+  const resetApp = async () => {
+    await saveTasks([]);
     nextIdRef.current = 1;
-    localStorage.removeItem("taskfield");
+    if (!isAuthenticated) {
+      localStorage.removeItem("taskfield");
+    }
   };
 
-  const editTask = (id, newText, newCategory = null) => {
-    setTasks((prevTasks) => {
-      const updatedTasks = prevTasks.map((task) =>
-        task.id === id
-          ? {
-              ...task,
-              text: newText,
-              ...(newCategory && { category: newCategory }),
-            }
-          : task
-      );
-      localStorage.setItem("taskfield", JSON.stringify(updatedTasks));
-      return updatedTasks;
-    });
+  const editTask = async (id, newText, newCategory = null) => {
+    const updatedTasks = tasks.map((task) =>
+      task.id === id
+        ? {
+            ...task,
+            text: newText,
+            ...(newCategory && { category: newCategory }),
+          }
+        : task
+    );
+    await saveTasks(updatedTasks);
   };
 
-  const reorderTasks = (oldIndex, newIndex) => {
-    setTasks((items) => {
-      const updatedTasks = arrayMove(items, oldIndex, newIndex);
-      localStorage.setItem("taskfield", JSON.stringify(updatedTasks));
-      return updatedTasks;
-    });
+  const reorderTasks = async (oldIndex, newIndex) => {
+    const updatedTasks = arrayMove(tasks, oldIndex, newIndex);
+    await saveTasks(updatedTasks);
   };
 
   return {
@@ -119,5 +122,6 @@ export function useTask() {
     resetApp,
     editTask,
     reorderTasks,
+    isAuthenticated,
   };
 }

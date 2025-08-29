@@ -14,22 +14,83 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [userTasks, setUserTasks] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const userData = localStorage.getItem("user");
+  const loadUserTasks = async (userId) => {
+    try {
+      const response = await fetch(`${API_URL}/api/tasks/${userId}`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setUserTasks(data.tasks || []);
+          return data.tasks || [];
+        }
+      }
+      return [];
+    } catch (error) {
+      console.error("Error loading tasks:", error);
+      return [];
+    }
+  };
 
-    if (token && userData) {
-      try {
-        setUser(JSON.parse(userData));
-      } catch (error) {
-        console.error("Error parsing user data:", error);
-        localStorage.removeItem("user");
-        localStorage.removeItem("token");
+  const saveUserTasks = async (userId, tasks) => {
+    try {
+      const response = await fetch(`${API_URL}/api/tasks/${userId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ tasks }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setUserTasks(tasks);
+          return true;
+        }
+      }
+      return false;
+    } catch (error) {
+      console.error("Error saving tasks:", error);
+      return false;
+    }
+  };
+
+  const migrateLocalTasks = async (userId) => {
+    const localTasks = JSON.parse(localStorage.getItem("taskfield") || "[]");
+    if (localTasks.length > 0) {
+      const success = await saveUserTasks(userId, localTasks);
+      if (success) {
+        localStorage.removeItem("taskfield");
+        console.log("Local tasks migrated to cloud");
       }
     }
-    setLoading(false);
+  };
+
+  useEffect(() => {
+    const initializeAuth = async () => {
+      const token = localStorage.getItem("token");
+      const userData = localStorage.getItem("user");
+
+      if (token && userData) {
+        try {
+          const user = JSON.parse(userData);
+          setUser(user);
+
+          const tasks = await loadUserTasks(user.id);
+          setUserTasks(tasks);
+        } catch (error) {
+          console.error("Error parsing user data:", error);
+          localStorage.removeItem("user");
+          localStorage.removeItem("token");
+        }
+      }
+      setLoading(false);
+    };
+
+    initializeAuth();
   }, []);
 
   const login = async (loginIdentifier, password) => {
@@ -58,6 +119,10 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
         setUser(data.user);
+
+        await loadUserTasks(data.user.id);
+        await migrateLocalTasks(data.user.id);
+
         return { success: true };
       } else {
         return { success: false, message: data.message };
@@ -94,6 +159,10 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
         setUser(data.user);
+        setUserTasks([]);
+
+        await migrateLocalTasks(data.user.id);
+
         return { success: true };
       } else {
         return { success: false, message: data.message };
@@ -106,15 +175,20 @@ export const AuthProvider = ({ children }) => {
       };
     }
   };
+
   const logout = () => {
     console.log("Logging out");
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setUser(null);
+    setUserTasks([]);
   };
 
   const value = {
     user,
+    userTasks,
+    loadUserTasks,
+    saveUserTasks,
     login,
     register,
     logout,

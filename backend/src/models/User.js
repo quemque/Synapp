@@ -1,5 +1,28 @@
 import mongoose from "mongoose";
 
+const taskSchema = new mongoose.Schema({
+  id: {
+    type: String,
+    required: true,
+  },
+  text: {
+    type: String,
+    required: true,
+  },
+  completed: {
+    type: Boolean,
+    default: false,
+  },
+  category: {
+    type: String,
+    default: "general",
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
@@ -20,6 +43,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     minlength: 6,
   },
+  tasks: [taskSchema], // Добавляем массив задач
   createdAt: {
     type: Date,
     default: Date.now,
