@@ -61,12 +61,23 @@ export const AuthProvider = ({ children }) => {
   const migrateLocalTasks = async (userId) => {
     const localTasks = JSON.parse(localStorage.getItem("taskfield") || "[]");
     if (localTasks.length > 0) {
-      const success = await saveUserTasks(userId, localTasks);
+      const cloudTasks = await loadUserTasks(userId);
+      const mergedTasks = [...cloudTasks];
+
+      localTasks.forEach((localTask) => {
+        if (!cloudTasks.some((cloudTask) => cloudTask.id === localTask.id)) {
+          mergedTasks.push(localTask);
+        }
+      });
+
+      const success = await saveUserTasks(userId, mergedTasks);
       if (success) {
         localStorage.removeItem("taskfield");
         console.log("Local tasks migrated to cloud");
+        return mergedTasks;
       }
     }
+    return await loadUserTasks(userId);
   };
 
   useEffect(() => {
@@ -120,8 +131,8 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem("user", JSON.stringify(data.user));
         setUser(data.user);
 
-        await loadUserTasks(data.user.id);
-        await migrateLocalTasks(data.user.id);
+        const mergedTasks = await migrateLocalTasks(data.user.id);
+        setUserTasks(mergedTasks);
 
         return { success: true };
       } else {
@@ -159,9 +170,9 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
         setUser(data.user);
-        setUserTasks([]);
 
-        await migrateLocalTasks(data.user.id);
+        const mergedTasks = await migrateLocalTasks(data.user.id);
+        setUserTasks(mergedTasks);
 
         return { success: true };
       } else {

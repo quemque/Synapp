@@ -7,10 +7,8 @@ export function useTask() {
   const nextIdRef = useRef(1);
   const { user, userTasks, saveUserTasks, isAuthenticated } = useAuth();
 
-  useEffect(() => {
-    if (isAuthenticated && user) {
-      setTasks(userTasks);
-    } else {
+  const loadLocalTasks = useCallback(() => {
+    if (!isAuthenticated) {
       const savedTasks = localStorage.getItem("taskfield");
       if (savedTasks) {
         try {
@@ -18,7 +16,6 @@ export function useTask() {
           const validTasks = parsedTasks.filter(
             (task) => task && typeof task.id === "number" && !isNaN(task.id)
           );
-          setTasks(validTasks);
 
           if (validTasks.length > 0) {
             const maxId = Math.max(...validTasks.map((task) => task.id));
@@ -26,19 +23,38 @@ export function useTask() {
           } else {
             nextIdRef.current = 1;
           }
+
+          return validTasks;
         } catch (error) {
           console.error("Error parsing tasks from localStorage:", error);
-          setTasks([]);
           nextIdRef.current = 1;
+          return [];
         }
       }
     }
-  }, [isAuthenticated, user, userTasks]);
+    nextIdRef.current = 1;
+    return [];
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      setTasks(userTasks);
+
+      if (userTasks.length > 0) {
+        const maxId = Math.max(...userTasks.map((task) => task.id));
+        nextIdRef.current = maxId + 1;
+      } else {
+        nextIdRef.current = 1;
+      }
+    } else {
+      const localTasks = loadLocalTasks();
+      setTasks(localTasks);
+    }
+  }, [isAuthenticated, userTasks, loadLocalTasks]);
 
   const saveTasks = useCallback(
     async (updatedTasks) => {
       if (isAuthenticated && user) {
-        // Сохраняем в облако
         await saveUserTasks(user.id, updatedTasks);
       } else {
         localStorage.setItem("taskfield", JSON.stringify(updatedTasks));
