@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
-const API_URL = import.meta.env.BACK_URL || "http://localhost:3001";
+const API_URL = import.meta.env.VITE_BACK_URL || "http://localhost:3001";
 
 const AuthContext = createContext();
 
