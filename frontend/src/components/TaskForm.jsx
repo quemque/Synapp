@@ -8,6 +8,7 @@ import {
   FaShoppingCart,
   FaHeart,
   FaEllipsisH,
+  FaFilm,
 } from "react-icons/fa";
 import { MdNotificationImportant } from "react-icons/md";
 export default function TaskForm({ onAddTask }) {
@@ -35,6 +36,7 @@ export default function TaskForm({ onAddTask }) {
       icon: <FaShoppingCart />,
       color: "#fd7e14",
     },
+    { id: "watch", name: "Watch", icon: <FaFilm />, color: "#ffff" },
     { id: "personal", name: "Personal", icon: <FaHeart />, color: "#e83e8c" },
   ];
 

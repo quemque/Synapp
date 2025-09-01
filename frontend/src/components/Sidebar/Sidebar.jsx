@@ -4,32 +4,35 @@ import { AiOutlineClose, AiOutlineDown, AiOutlineUp } from "react-icons/ai";
 import {
   FaTasks,
   FaTags,
-  FaHome,
-  FaBriefcase,
-  FaBook,
-  FaShoppingCart,
-  FaHeart,
-  FaEllipsisH,
   FaSignInAlt,
   FaUser,
   FaSignOutAlt,
 } from "react-icons/fa";
-import { MdNotificationImportant } from "react-icons/md";
-import { useAuth } from "../../context/AuthContext"; // Импортируем useAuth
+import { getCategoryColor, getCategoryIcon } from "../handlers/GetTags";
+import { useAuth } from "../../context/AuthContext";
 import "./Sidebar.css";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const tags = ["Urgent", "Home", "Work", "Study", "Shopping", "Personal"];
 
-  // Получаем данные пользователя и функцию logout из контекста
+  const tags = [
+    "Urgent",
+    "Home",
+    "Work",
+    "Study",
+    "Shopping",
+    "Watch",
+    "Personal",
+  ];
+
   const { user, logout } = useAuth();
 
   const mainMenuItems = [
-    { path: "/", label: "All tasks", icon: <FaTasks /> },
+    { id: "main-all-tasks", path: "/", label: "All tasks", icon: <FaTasks /> },
     {
+      id: "main-tags",
       path: "/tags",
       label: "Tags",
       icon: <FaTags />,
@@ -37,59 +40,24 @@ const Sidebar = () => {
     },
   ];
 
-  // Динамически меняем пункты меню в зависимости от авторизации
   const bottomMenuItems = user
     ? [
         {
+          id: "bottom-logout",
           path: "#logout",
           label: "Logout",
           icon: <FaSignOutAlt />,
-          action: logout, // Добавляем действие для выхода
+          action: logout,
         },
       ]
-    : [{ path: "/login", label: "Login", icon: <FaSignInAlt /> }];
-
-  // Функция для получения цвета категории
-  const getCategoryColor = (category) => {
-    const cat = category || "general";
-    switch (cat.toLowerCase()) {
-      case "home":
-        return "#28a745";
-      case "work":
-        return "#007bff";
-      case "study":
-        return "#ffc107";
-      case "shopping":
-        return "#fd7e14";
-      case "personal":
-        return "#e83e8c";
-      case "urgent":
-        return "#f1273bff";
-      default:
-        return "#6c757d";
-    }
-  };
-
-  // Функция для получения иконки категории
-  const getCategoryIcon = (category) => {
-    const cat = category || "general";
-    switch (cat.toLowerCase()) {
-      case "urgent":
-        return <MdNotificationImportant />;
-      case "home":
-        return <FaHome />;
-      case "work":
-        return <FaBriefcase />;
-      case "study":
-        return <FaBook />;
-      case "shopping":
-        return <FaShoppingCart />;
-      case "personal":
-        return <FaHeart />;
-      default:
-        return <FaEllipsisH />;
-    }
-  };
+    : [
+        {
+          id: "bottom-login",
+          path: "/login",
+          label: "Login",
+          icon: <FaSignInAlt />,
+        },
+      ];
 
   useEffect(() => {
     setIsOpen(false);
@@ -139,7 +107,7 @@ const Sidebar = () => {
 
   const handleMenuItemClick = (item) => {
     if (item.action) {
-      item.action(); // Выполняем действие (например, logout)
+      item.action();
       closeSidebar();
     }
   };
@@ -147,7 +115,7 @@ const Sidebar = () => {
   const renderMenuItem = (item) => {
     if (item.hasDropdown) {
       return (
-        <>
+        <div key={item.id}>
           <button
             onClick={toggleDropdown}
             className={`sidebar-link ${
@@ -222,59 +190,54 @@ const Sidebar = () => {
                 maxHeight: dropdownOpen ? "500px" : "0",
               }}
             >
-              {tags.map((tag, index) => {
-                const tagColor = getCategoryColor(tag);
-                const tagIcon = getCategoryIcon(tag);
-
-                return (
-                  <Link
-                    key={index}
-                    to={`/tags/${tag.toLowerCase()}`}
-                    className="dropdown-item"
-                    onClick={closeSidebar}
+              {tags.map((tag) => (
+                <Link
+                  key={`tag-${tag.toLowerCase()}`}
+                  to={`/tags/${tag.toLowerCase()}`}
+                  className="dropdown-item"
+                  onClick={closeSidebar}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    padding: "12px 20px",
+                    color: "#bdc3c7",
+                    textDecoration: "none",
+                    transition: "all 0.2s ease",
+                    borderRadius: "6px",
+                    margin: "2px 0",
+                    fontSize: "0.9rem",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.background = "rgba(255, 255, 255, 0.05)";
+                    e.target.style.color = "white";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.background = "transparent";
+                    e.target.style.color = "#bdc3c7";
+                  }}
+                >
+                  <span
                     style={{
+                      marginRight: "10px",
+                      color: getCategoryColor(tag),
+                      fontSize: "1rem",
                       display: "flex",
                       alignItems: "center",
-                      padding: "12px 20px",
-                      color: "#bdc3c7",
-                      textDecoration: "none",
-                      transition: "all 0.2s ease",
-                      borderRadius: "6px",
-                      margin: "2px 0",
-                      fontSize: "0.9rem",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.target.style.background = "rgba(255, 255, 255, 0.05)";
-                      e.target.style.color = "white";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.target.style.background = "transparent";
-                      e.target.style.color = "#bdc3c7";
                     }}
                   >
-                    <span
-                      style={{
-                        marginRight: "10px",
-                        color: tagColor,
-                        fontSize: "1rem",
-                        display: "flex",
-                        alignItems: "center",
-                      }}
-                    >
-                      {tagIcon}
-                    </span>
-                    <span>{tag}</span>
-                  </Link>
-                );
-              })}
+                    {getCategoryIcon(tag)}
+                  </span>
+                  <span>{tag}</span>
+                </Link>
+              ))}
             </div>
           )}
-        </>
+        </div>
       );
     } else if (item.action) {
-      // Для кнопок с действиями (например, Logout)
       return (
         <button
+          key={item.id}
           onClick={() => handleMenuItemClick(item)}
           className="sidebar-link"
           style={{
@@ -326,9 +289,9 @@ const Sidebar = () => {
         </button>
       );
     } else {
-      // Для обычных ссылок
       return (
         <Link
+          key={item.id}
           to={item.path}
           className={`sidebar-link ${
             location.pathname === item.path ? "active" : ""
@@ -538,18 +501,10 @@ const Sidebar = () => {
               backdropFilter: "blur(10px)",
             }}
           >
-            <AiOutlineClose
-              style={{
-                borderRadius: "50%",
-                backgroundColor: "transparent",
-                border: "none",
-                outline: "none",
-              }}
-            />
+            <AiOutlineClose />
           </button>
         </div>
 
-        {/* Блок информации о пользователе */}
         {user && (
           <div
             style={{
@@ -585,7 +540,6 @@ const Sidebar = () => {
           </div>
         )}
 
-        {/* Основное меню */}
         <nav
           style={{
             display: "flex",
@@ -594,14 +548,9 @@ const Sidebar = () => {
             flex: 1,
           }}
         >
-          {mainMenuItems.map((item) => (
-            <React.Fragment key={item.path}>
-              {renderMenuItem(item)}
-            </React.Fragment>
-          ))}
+          {mainMenuItems.map((item) => renderMenuItem(item))}
         </nav>
 
-        {/* Нижнее меню (Login/Logout) */}
         <div
           style={{
             marginTop: "auto",
@@ -615,11 +564,7 @@ const Sidebar = () => {
               flexDirection: "column",
             }}
           >
-            {bottomMenuItems.map((item) => (
-              <React.Fragment key={item.path || item.label}>
-                {renderMenuItem(item)}
-              </React.Fragment>
-            ))}
+            {bottomMenuItems.map((item) => renderMenuItem(item))}
           </nav>
         </div>
       </aside>

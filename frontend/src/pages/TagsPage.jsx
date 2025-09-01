@@ -14,7 +14,12 @@ import {
   FaGripLines,
   FaTag,
   FaArrowLeft,
+  FaFilm,
 } from "react-icons/fa";
+import {
+  getCategoryColor,
+  getCategoryIcon,
+} from "../components/handlers/GetTags";
 import { IoMdAdd, IoMdClose, IoMdSend } from "react-icons/io";
 import {
   DndContext,
@@ -55,46 +60,6 @@ function TaskItem({ task, onToggleComplete, onDelete, onEdit }) {
   const [editText, setEditText] = useState(task.text);
 
   const taskCategory = task.category || "general";
-
-  const getCategoryColor = (category) => {
-    const cat = category || "general";
-    switch (cat) {
-      case "home":
-        return "#28a745";
-      case "work":
-        return "#007bff";
-      case "study":
-        return "#ffc107";
-      case "shopping":
-        return "#fd7e14";
-      case "personal":
-        return "#e83e8c";
-      case "urgent":
-        return "#f1273bff";
-      default:
-        return "#6c757d";
-    }
-  };
-
-  const getCategoryIcon = (category) => {
-    const cat = category || "general";
-    switch (cat) {
-      case "home":
-        return <FaHome />;
-      case "work":
-        return <FaBriefcase />;
-      case "study":
-        return <FaBook />;
-      case "shopping":
-        return <FaShoppingCart />;
-      case "personal":
-        return <FaHeart />;
-      case "urgent":
-        return <MdNotificationImportant />;
-      default:
-        return <FaEllipsisH />;
-    }
-  };
 
   const getCategoryName = (category) => {
     const cat = category || "general";

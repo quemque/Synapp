@@ -38,9 +38,9 @@ export function useTask() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      setTasks(userTasks);
+      setTasks(userTasks || []);
 
-      if (userTasks.length > 0) {
+      if (userTasks && userTasks.length > 0) {
         const maxId = Math.max(...userTasks.map((task) => task.id));
         nextIdRef.current = maxId + 1;
       } else {
@@ -65,12 +65,8 @@ export function useTask() {
   );
 
   const addTask = async (text, category = "general") => {
-    if (typeof nextIdRef.current !== "number" || isNaN(nextIdRef.current)) {
-      nextIdRef.current = 1;
-    }
-
     const newTask = {
-      id: nextIdRef.current,
+      id: Date.now(),
       text,
       category,
       completed: false,
@@ -78,7 +74,6 @@ export function useTask() {
 
     const updatedTasks = [...tasks, newTask];
     await saveTasks(updatedTasks);
-    nextIdRef.current += 1;
   };
 
   const deleteTask = async (id) => {
@@ -98,13 +93,12 @@ export function useTask() {
   };
 
   const toggleFilter = async () => {
-    const updatedTasks = tasks.filter((task) => task.completed !== true);
+    const updatedTasks = tasks.filter((task) => !task.completed);
     await saveTasks(updatedTasks);
   };
 
   const resetApp = async () => {
     await saveTasks([]);
-    nextIdRef.current = 1;
     if (!isAuthenticated) {
       localStorage.removeItem("taskfield");
     }
@@ -129,7 +123,7 @@ export function useTask() {
   };
 
   return {
-    tasks,
+    tasks: tasks || [],
     addTask,
     deleteTask,
     toggleTask,

@@ -1,21 +1,14 @@
-import {
-  FaHome,
-  FaBriefcase,
-  FaBook,
-  FaShoppingCart,
-  FaHeart,
-  FaEllipsisH,
-  FaCheckCircle,
-  FaRegCircle,
-  FaTrashAlt,
-  FaGripLines,
-} from "react-icons/fa";
-import { MdNotificationImportant } from "react-icons/md";
-
 import { useState } from "react";
 import "./EditableTaskField.css";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { getCategoryColor, getCategoryIcon } from "./handlers/GetTags";
+import {
+  FaGripLines,
+  FaCheckCircle,
+  FaRegCircle,
+  FaTrashAlt,
+} from "react-icons/fa";
 
 export default function EditableTaskField({
   task,
@@ -30,58 +23,26 @@ export default function EditableTaskField({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: task.id });
+  } = useSortable({
+    id: task.id,
+    // Добавляем данные задачи для использования в onDragEnd
+    data: {
+      type: "task",
+      task: task,
+    },
+  });
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 1 : 0, // Добавляем z-index для перетаскиваемого элемента
   };
 
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(task.text);
 
   const taskCategory = task.category || "general";
-
-  const getCategoryColor = (category) => {
-    const cat = category || "general";
-    switch (cat) {
-      case "home":
-        return "#28a745";
-      case "work":
-        return "#007bff";
-      case "study":
-        return "#ffc107";
-      case "shopping":
-        return "#fd7e14";
-      case "personal":
-        return "#e83e8c";
-      case "urgent":
-        return "#f1273bff";
-      default:
-        return "#6c757d";
-    }
-  };
-
-  const getCategoryIcon = (category) => {
-    const cat = category || "general";
-    switch (cat) {
-      case "home":
-        return <FaHome />;
-      case "work":
-        return <FaBriefcase />;
-      case "study":
-        return <FaBook />;
-      case "shopping":
-        return <FaShoppingCart />;
-      case "personal":
-        return <FaHeart />;
-      case "urgent":
-        return <MdNotificationImportant />;
-      default:
-        return <FaEllipsisH />;
-    }
-  };
 
   const getCategoryName = (category) => {
     const cat = category || "general";
@@ -115,10 +76,18 @@ export default function EditableTaskField({
         ref={setNodeRef}
         style={style}
         {...attributes}
-        className={`task-item ${task.completed ? "completed" : ""}`}
+        className={`task-item ${task.completed ? "completed" : ""} ${
+          isDragging ? "dragging" : ""
+        }`}
       >
         <div className="drag-handle-container">
-          <FaGripLines className="drag-handle-icon" {...listeners} />
+          <FaGripLines
+            className="drag-handle-icon"
+            {...listeners}
+            // Добавляем предотвращение всплытия событий
+            onClick={(e) => e.preventDefault()}
+            onDoubleClick={(e) => e.preventDefault()}
+          />
         </div>
         <div
           title="Complete task"
