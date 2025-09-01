@@ -27,7 +27,7 @@ services:
       - ./backend/src:/app/src
       - /app/node_modules
 
-  mongo: # ← ЭТОТ СЕРВИС ДОЛЖЕН БЫТЬ ОПРЕДЕЛЕН!
+  mongo:
     image: mongo:6
     ports:
       - "27017:27017"
