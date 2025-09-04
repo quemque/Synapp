@@ -17,7 +17,7 @@ import {
 } from "@dnd-kit/sortable";
 
 const HomePage = ({
-  tasks = [], // Добавляем значение по умолчанию
+  tasks = [],
   addTask,
   deleteTask,
   toggleTask,
@@ -51,13 +51,12 @@ const HomePage = ({
 
   return (
     <div>
-      <h1 className="text-capital">Todo app</h1>
+      <h1 className="text-capital">Synapp</h1>
       <TaskForm onAddTask={addTask} />
 
-      {tasks &&
-        tasks.length > 0 && ( // Добавляем проверку на существование tasks
-          <Buttons cleaning={toggleClean} filterb={toggleFilter} />
-        )}
+      {tasks && tasks.length > 0 && (
+        <Buttons cleaning={toggleClean} filterb={toggleFilter} />
+      )}
 
       <DndContext
         sensors={sensors}
