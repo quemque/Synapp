@@ -1,4 +1,4 @@
-# 📝 Todo-React: Кроссплатформенное приложение для заметок
+# 📝 Synapp: Кроссплатформенное приложение для заметок
 
 [![Vercel Deployment](https://img.shields.io/badge/Vercel-Deployed-black?style=for-the-badge&logo=vercel)](https://todo-react-phi-dun.vercel.app/)
 [![React](https://img.shields.io/badge/React-18.2-blue?style=for-the-badge&logo=react)](https://reactjs.org/)
