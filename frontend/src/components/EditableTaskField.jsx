@@ -25,7 +25,6 @@ export default function EditableTaskField({
     isDragging,
   } = useSortable({
     id: task.id,
-    // Добавляем данные задачи для использования в onDragEnd
     data: {
       type: "task",
       task: task,
@@ -36,7 +35,7 @@ export default function EditableTaskField({
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
-    zIndex: isDragging ? 1 : 0, // Добавляем z-index для перетаскиваемого элемента
+    zIndex: isDragging ? 1 : 0, 
   };
 
   const [isEditing, setIsEditing] = useState(false);
@@ -84,7 +83,6 @@ export default function EditableTaskField({
           <FaGripLines
             className="drag-handle-icon"
             {...listeners}
-            // Добавляем предотвращение всплытия событий
             onClick={(e) => e.preventDefault()}
             onDoubleClick={(e) => e.preventDefault()}
           />
