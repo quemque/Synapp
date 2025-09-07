@@ -85,7 +85,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// Регистрация (оставляем без изменений)
+// Регистрация
 router.post("/register", async (req, res) => {
   try {
     const { username, email, password } = req.body;

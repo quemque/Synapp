@@ -1,7 +1,10 @@
 import { FaSyncAlt, FaFilter } from "react-icons/fa";
 import "./Buttons.css";
-
-export default function Buttons({ cleaning, filterb }) {
+interface ButtonProps {
+  cleaning: () => void;
+  filterb: () => void;
+}
+function Buttons({ cleaning, filterb }: ButtonProps) {
   return (
     <div className="buttons">
       <button
@@ -21,3 +24,4 @@ export default function Buttons({ cleaning, filterb }) {
     </div>
   );
 }
+export default Buttons;

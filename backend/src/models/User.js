@@ -43,7 +43,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     minlength: 6,
   },
-  tasks: [taskSchema], // Добавляем массив задач
+  tasks: [taskSchema],
   createdAt: {
     type: Date,
     default: Date.now,

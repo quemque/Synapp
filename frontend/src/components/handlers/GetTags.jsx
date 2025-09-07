@@ -1,3 +1,4 @@
+import { ReactElement } from "react";
 import {
   FaHome,
   FaBriefcase,
@@ -8,9 +9,10 @@ import {
   FaFilm,
 } from "react-icons/fa";
 import { MdNotificationImportant } from "react-icons/md";
+import { default_category_id } from "../../data/categories";
 
 export const getCategoryColor = (category) => {
-  const cat = category?.toLowerCase() || "general";
+  const cat = category?.toLowerCase() || default_category_id;
   switch (cat) {
     case "home":
       return "#28a745";
@@ -32,7 +34,7 @@ export const getCategoryColor = (category) => {
 };
 
 export const getCategoryIcon = (category) => {
-  const cat = category?.toLowerCase() || "general";
+  const cat = category?.toLowerCase() || default_category_id;
   switch (cat) {
     case "home":
       return <FaHome />;
@@ -54,6 +56,6 @@ export const getCategoryIcon = (category) => {
 };
 
 export const getCategoryName = (category) => {
-  const cat = category?.toLowerCase() || "general";
+  const cat = category?.toLowerCase() || default_category_id;
   return cat.charAt(0).toUpperCase() + cat.slice(1);
 };

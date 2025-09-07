@@ -1,21 +1,30 @@
-import { useState } from "react";
+import { useState, KeyboardEvent } from "react";
 import "./EditableTaskField.css";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { getCategoryColor, getCategoryIcon } from "./handlers/GetTags";
+import { getCategoryColor, getCategoryIcon } from "./handlers/GetTags.jsx";
+import { Task } from "../types";
 import {
   FaGripLines,
   FaCheckCircle,
   FaRegCircle,
   FaTrashAlt,
 } from "react-icons/fa";
+import { default_category_id } from "../data/categories";
+
+interface TaskitemProps {
+  task: Task;
+  onToggleComplete: (id: string) => void;
+  onDelete: (id: string) => void;
+  onEdit: (id: string, newTask: string) => void;
+}
 
 export default function EditableTaskField({
   task,
   onToggleComplete,
   onDelete,
   onEdit,
-}) {
+}: TaskitemProps) {
   const {
     attributes,
     listeners,
@@ -35,16 +44,16 @@ export default function EditableTaskField({
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
-    zIndex: isDragging ? 1 : 0, 
+    zIndex: isDragging ? 1 : 0,
   };
 
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(task.text);
 
-  const taskCategory = task.category || "general";
+  const taskCategory = task.category || default_category_id;
 
-  const getCategoryName = (category) => {
-    const cat = category || "general";
+  const getCategoryName = (category: string) => {
+    const cat = category || default_category_id;
     return cat.charAt(0).toUpperCase() + cat.slice(1);
   };
 
@@ -60,7 +69,7 @@ export default function EditableTaskField({
     setIsEditing(false);
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       handleSave();
     } else if (e.key === "Escape") {

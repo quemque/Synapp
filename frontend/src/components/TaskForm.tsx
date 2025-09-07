@@ -1,52 +1,35 @@
-import { useState, useRef, useEffect } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useMemo,
+} from "react";
 import "./TaskForm.css";
 import { MdKeyboardReturn } from "react-icons/md";
-import {
-  FaHome,
-  FaBriefcase,
-  FaBook,
-  FaShoppingCart,
-  FaHeart,
-  FaEllipsisH,
-  FaFilm,
-} from "react-icons/fa";
-import { MdNotificationImportant } from "react-icons/md";
-export default function TaskForm({ onAddTask }) {
-  const [inputValue, setInputValue] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("general");
-  const [showCategoryMenu, setShowCategoryMenu] = useState(false);
+import { CATEGORIES } from "../data/categories";
+import { default_category_id } from "../data/categories";
 
-  const categoryMenuRef = useRef(null);
-  const categoryButtonRef = useRef(null);
+interface TaskForm {
+  onAddTask: (text: string, category?: string) => Promise<void>;
+}
+export default function TaskForm({ onAddTask }: TaskForm) {
+  const [inputValue, setInputValue] = useState<string>("");
+  const [selectedCategory, setSelectedCategory] =
+    useState<string>(default_category_id);
+  const [showCategoryMenu, setShowCategoryMenu] = useState<boolean>(false);
 
-  const categories = [
-    { id: "general", name: "General", icon: <FaEllipsisH />, color: "#6c757d" },
-    {
-      id: "urgent",
-      name: "Urgent",
-      icon: <MdNotificationImportant />,
-      color: "#f1273bff",
-    },
-    { id: "home", name: "Home", icon: <FaHome />, color: "#28a745" },
-    { id: "work", name: "Work", icon: <FaBriefcase />, color: "#007bff" },
-    { id: "study", name: "Study", icon: <FaBook />, color: "#ffc107" },
-    {
-      id: "shopping",
-      name: "Shopping",
-      icon: <FaShoppingCart />,
-      color: "#fd7e14",
-    },
-    { id: "watch", name: "Watch", icon: <FaFilm />, color: "#ffff" },
-    { id: "personal", name: "Personal", icon: <FaHeart />, color: "#e83e8c" },
-  ];
+  const categoryMenuRef = useRef<HTMLDivElement>(null);
+  const categoryButtonRef = useRef<HTMLButtonElement>(null);
 
+  const categories = CATEGORIES;
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutside = (event: MouseEvent) => {
       if (
         categoryMenuRef.current &&
-        !categoryMenuRef.current.contains(event.target) &&
+        !categoryMenuRef.current.contains(event.target as Node) &&
         categoryButtonRef.current &&
-        !categoryButtonRef.current.contains(event.target)
+        !categoryButtonRef.current.contains(event.target as Node)
       ) {
         setShowCategoryMenu(false);
       }
@@ -58,27 +41,33 @@ export default function TaskForm({ onAddTask }) {
     };
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (inputValue.trim()) {
-      onAddTask(inputValue, selectedCategory);
-      setInputValue("");
-      setSelectedCategory("general");
-      setShowCategoryMenu(false);
+      try {
+        onAddTask(inputValue, selectedCategory);
+        setInputValue("");
+        setSelectedCategory("general");
+        setShowCategoryMenu(false);
+      } catch (error) {
+        console.error("Failed to add task:", error);
+      }
     }
   };
 
-  const handleCategorySelect = (categoryId) => {
+  const handleCategorySelect = useCallback((categoryId: string) => {
     setSelectedCategory(categoryId);
     setShowCategoryMenu(false);
-  };
+  }, []);
 
   const toggleCategoryMenu = () => {
     setShowCategoryMenu((prev) => !prev);
   };
 
-  const selectedCategoryObj = categories.find(
-    (cat) => cat.id === selectedCategory
+  const selectedCategoryObj = useMemo(
+    () =>
+      categories.find((cat) => cat.id === selectedCategory) || categories[0],
+    [categories, selectedCategory]
   );
 
   return (
