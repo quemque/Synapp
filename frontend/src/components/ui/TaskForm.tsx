@@ -7,8 +7,7 @@ import React, {
 } from "react";
 import "./TaskForm.css";
 import { MdKeyboardReturn } from "react-icons/md";
-import { CATEGORIES } from "../data/categories";
-import { default_category_id } from "../data/categories";
+import { CATEGORIES, default_category_id } from "../data/categories";
 
 interface TaskForm {
   onAddTask: (text: string, category?: string) => Promise<void>;

@@ -1,7 +1,7 @@
-import React from "react";
 import { Link, useLocation } from "react-router-dom";
+import { MenuItemProps } from "../../types/index";
 
-const MenuItem = ({ item, onClose, onAction }) => {
+const MenuItem = ({ item, onClose, onAction }: MenuItemProps) => {
   const location = useLocation();
   const isActive = location.pathname === item.path;
   const isActivePath = location.pathname.startsWith(item.path);
@@ -18,11 +18,17 @@ const MenuItem = ({ item, onClose, onAction }) => {
             <span className="menu-label">{item.label}</span>
           </div>
           <span className="dropdown-arrow">
-            {item.dropdownOpen ? <item.upIcon /> : <item.downIcon />}
+            {item.dropdownOpen ? (
+              item.upIcon ? (
+                <item.upIcon />
+              ) : null
+            ) : item.downIcon ? (
+              <item.downIcon />
+            ) : null}
           </span>
         </button>
 
-        {item.dropdownOpen && (
+        {item.dropdownOpen && item.tags && (
           <div className="tags-dropdown">
             {item.tags.map((tag) => (
               <Link
@@ -33,9 +39,11 @@ const MenuItem = ({ item, onClose, onAction }) => {
               >
                 <span
                   className="drop-tag-icon"
-                  style={{ color: item.getColor(tag) }}
+                  style={{
+                    color: item.getColor ? item.getColor(tag) : undefined,
+                  }}
                 >
-                  {item.getIcon(tag)}
+                  {item.getIcon ? item.getIcon(tag) : null}
                 </span>
                 <span className="tag-name">{tag}</span>
               </Link>

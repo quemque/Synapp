@@ -9,7 +9,7 @@ import {
   FaFilm,
 } from "react-icons/fa";
 import { MdNotificationImportant } from "react-icons/md";
-import { default_category_id } from "../../data/categories";
+import { default_category_id } from "../data/categories";
 
 export const getCategoryColor = (category) => {
   const cat = category?.toLowerCase() || default_category_id;

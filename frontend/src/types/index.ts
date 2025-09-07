@@ -1,3 +1,5 @@
+import { ReactElement } from "react";
+
 export type User = {
   id: string;
   email: string;
@@ -47,3 +49,58 @@ export type ApiResponse<T> = {
   message?: string;
   success: boolean;
 };
+export interface AuthResponse {
+  user: User;
+  token: string;
+  message?: string;
+}
+
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+export interface RegisterCredentials {
+  username: string;
+  email: string;
+  password: string;
+}
+
+export interface ApiError {
+  message: string;
+  error?: string;
+  statusCode?: number;
+}
+export interface AuthResponse {
+  token: string;
+  user: User;
+}
+
+export interface FormData {
+  username: string;
+  email: string;
+  password: string;
+}
+
+export interface MenuItem {
+  id: string;
+  label: string;
+  path: string;
+  icon: ReactElement;
+  hasDropdown?: boolean;
+  dropdownOpen?: boolean;
+  onToggle?: () => void;
+  upIcon?: React.ComponentType;
+  downIcon?: React.ComponentType;
+  tags?: string[];
+  getColor?: (tag: string) => string;
+  getIcon?: (tag: string) => ReactElement;
+  action?: boolean;
+  onAction?: () => void;
+}
+
+export interface MenuItemProps {
+  item: MenuItem;
+  onClose: () => void;
+  onAction: (item: MenuItem) => void;
+}

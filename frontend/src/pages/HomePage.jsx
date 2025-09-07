@@ -1,7 +1,7 @@
 import React from "react";
-import TaskForm from "../components/TaskForm.tsx";
-import EditableTaskField from "../components/EditableTaskField.tsx";
-import Buttons from "../components/Buttons.tsx";
+import TaskForm from "../components/ui/TaskForm.tsx";
+import EditableTaskField from "../components/ui/EditableTaskField.tsx";
+import Buttons from "../components/ui/Buttons.tsx";
 import {
   DndContext,
   closestCenter,

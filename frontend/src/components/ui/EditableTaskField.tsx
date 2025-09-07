@@ -2,15 +2,18 @@ import { useState, KeyboardEvent } from "react";
 import "./EditableTaskField.css";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { getCategoryColor, getCategoryIcon } from "./handlers/GetTags.jsx";
-import { Task } from "../types";
+
+//Должно убраться скорее всего после всего перехода на ts))
+//@ts-ignore
+import { getCategoryColor, getCategoryIcon } from "../handlers/GetTags.jsx";
+import { Task } from "../../types/index.ts";
 import {
   FaGripLines,
   FaCheckCircle,
   FaRegCircle,
   FaTrashAlt,
 } from "react-icons/fa";
-import { default_category_id } from "../data/categories";
+import { default_category_id } from "../data/categories.js";
 
 interface TaskitemProps {
   task: Task;

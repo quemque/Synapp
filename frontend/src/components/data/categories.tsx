@@ -8,7 +8,7 @@ import {
   FaFilm,
 } from "react-icons/fa";
 import { MdNotificationImportant } from "react-icons/md";
-import { Category } from "../types";
+import { Category } from "../../types";
 export const CATEGORIES: Category[] = [
   { id: "general", name: "General", icon: <FaEllipsisH />, color: "#6c757d" },
   {

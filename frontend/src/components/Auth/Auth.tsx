@@ -1,27 +1,31 @@
-import { useState } from "react";
-import { authAPI } from "../services/api";
+import { FormEvent, useState } from "react";
+import { authAPI } from "../../services/api";
+import { AuthResponse, FormData } from "../../types/index";
 
-export const Auth = () => {
-  const [isLogin, setIsLogin] = useState(true);
-  const [formData, setFormData] = useState({
+export const Auth: React.FC = () => {
+  const [isLogin, setIsLogin] = useState<boolean>(true);
+  const [formData, setFormData] = useState<FormData>({
     username: "",
     email: "",
     password: "",
   });
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
-      let response;
+      let response: AuthResponse;
       if (isLogin) {
-        response = await authAPI.login(formData.email, formData.password);
+        response = await authAPI.login({
+          email: formData.email,
+          password: formData.password,
+        });
       } else {
-        response = await authAPI.register(
-          formData.username,
-          formData.email,
-          formData.password
-        );
+        response = await authAPI.register({
+          username: formData.username,
+          email: formData.email,
+          password: formData.password,
+        });
       }
 
       if (response.token) {
@@ -30,8 +34,10 @@ export const Auth = () => {
         alert("Success!");
         window.location.reload();
       }
-    } catch (error) {
-      alert("Error: " + error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        alert("Error: " + error.message);
+      }
     }
   };
 

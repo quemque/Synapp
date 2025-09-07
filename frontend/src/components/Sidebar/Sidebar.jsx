@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { AiOutlineClose, AiOutlineDown, AiOutlineUp } from "react-icons/ai";
 import {
@@ -10,7 +10,7 @@ import {
 } from "react-icons/fa";
 import { getCategoryColor, getCategoryIcon } from "../handlers/GetTags";
 import { useAuth } from "../../context/AuthContext";
-import MenuItem from "./Menultem";
+import MenuItem from "./MenuItem.tsx";
 import "./Sidebar.css";
 
 const Sidebar = () => {
