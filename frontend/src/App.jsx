@@ -5,11 +5,12 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import Sidebar from "./components/Sidebar/Sidebar.jsx";
+import Sidebar from "./components/Sidebar/Sidebar.tsx";
 import HomePage from "./pages/HomePage.jsx";
 import TagsPage from "./pages/TagsPage.jsx";
-import LoginPage from "../src/components/Auth/LoginPage.jsx";
-import RegisterPage from "../src/components/Auth/Register.jsx";
+//ИЗменть на ts
+import LoginPage from "../src/components/Auth/LoginPage";
+import RegisterPage from "../src/components/Auth/Register";
 import { useTask } from "./hooks/useTask.jsx";
 import { AuthProvider, useAuth } from "./context/AuthContext.jsx";
 

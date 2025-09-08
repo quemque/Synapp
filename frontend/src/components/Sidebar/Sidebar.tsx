@@ -8,9 +8,12 @@ import {
   FaUser,
   FaSignOutAlt,
 } from "react-icons/fa";
-import { getCategoryColor, getCategoryIcon } from "../handlers/GetTags";
-import { useAuth } from "../../context/AuthContext";
-import MenuItem from "./MenuItem.tsx";
+//убрать игнор после полной миграции)
+import { getCategoryColor, getCategoryIcon } from "../handlers/GetTags.tsx";
+//@ts-ignore
+import { useAuth } from "../../context/AuthContext.jsx";
+import { MenuItem as MenuItem } from "../../types/index.ts";
+import MenuItemComponent from "./MenuItem.tsx";
 import "./Sidebar.css";
 
 const Sidebar = () => {
@@ -34,7 +37,7 @@ const Sidebar = () => {
   }, [location.pathname]);
 
   useEffect(() => {
-    const handleEscape = (event) => {
+    const handleEscape = (event: KeyboardEvent): void => {
       if (event.key === "Escape" && isOpen) {
         setIsOpen(false);
       }
@@ -63,14 +66,14 @@ const Sidebar = () => {
   };
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
 
-  const handleMenuItemClick = (item) => {
+  const handleMenuItemClick = (item: MenuItem): void => {
     if (item.action) {
       item.action();
       closeSidebar();
     }
   };
 
-  const handleOverlayClick = (event) => {
+  const handleOverlayClick = (event: React.MouseEvent<HTMLElement>): void => {
     if (event.target === event.currentTarget) {
       closeSidebar();
     }
@@ -166,7 +169,7 @@ const Sidebar = () => {
 
         <nav className="main-menu">
           {mainMenuItems.map((item) => (
-            <MenuItem
+            <MenuItemComponent
               key={item.id}
               item={item}
               onClose={closeSidebar}
@@ -178,7 +181,7 @@ const Sidebar = () => {
         <div className="bottom-menu">
           <nav>
             {bottomMenuItems.map((item) => (
-              <MenuItem
+              <MenuItemComponent
                 key={item.id}
                 item={item}
                 onClose={closeSidebar}

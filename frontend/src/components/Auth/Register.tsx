@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import { useAuth } from "../../context/AuthContext.jsx";
+import { useState, ChangeEvent, FormEvent } from "react";
+//@ts-ignore
+import { useAuth } from "../../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import {
   FaUser,
@@ -22,7 +23,7 @@ const RegisterPage = () => {
   const { register } = useAuth();
   const navigate = useNavigate();
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -30,7 +31,7 @@ const RegisterPage = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     setLoading(true);
     setError("");

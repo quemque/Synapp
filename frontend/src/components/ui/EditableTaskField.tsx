@@ -3,9 +3,7 @@ import "./EditableTaskField.css";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-//Должно убраться скорее всего после всего перехода на ts))
-//@ts-ignore
-import { getCategoryColor, getCategoryIcon } from "../handlers/GetTags.jsx";
+import { getCategoryColor, getCategoryIcon } from "../handlers/GetTags.tsx";
 import { Task } from "../../types/index.ts";
 import {
   FaGripLines,

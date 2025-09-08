@@ -95,7 +95,7 @@ export interface MenuItem {
   tags?: string[];
   getColor?: (tag: string) => string;
   getIcon?: (tag: string) => ReactElement;
-  action?: boolean;
+  action?: () => void;
   onAction?: () => void;
 }
 

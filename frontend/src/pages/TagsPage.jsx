@@ -19,7 +19,7 @@ import {
 import {
   getCategoryColor,
   getCategoryIcon,
-} from "../components/handlers/GetTags";
+} from "../components/handlers/GetTags.tsx";
 import { IoMdAdd, IoMdClose, IoMdSend } from "react-icons/io";
 import {
   DndContext,

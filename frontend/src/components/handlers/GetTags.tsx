@@ -11,7 +11,7 @@ import {
 import { MdNotificationImportant } from "react-icons/md";
 import { default_category_id } from "../data/categories";
 
-export const getCategoryColor = (category) => {
+export const getCategoryColor = (category: string): string => {
   const cat = category?.toLowerCase() || default_category_id;
   switch (cat) {
     case "home":
@@ -33,7 +33,7 @@ export const getCategoryColor = (category) => {
   }
 };
 
-export const getCategoryIcon = (category) => {
+export const getCategoryIcon = (category: string): ReactElement => {
   const cat = category?.toLowerCase() || default_category_id;
   switch (cat) {
     case "home":
@@ -55,7 +55,7 @@ export const getCategoryIcon = (category) => {
   }
 };
 
-export const getCategoryName = (category) => {
+export const getCategoryName = (category: string): string => {
   const cat = category?.toLowerCase() || default_category_id;
   return cat.charAt(0).toUpperCase() + cat.slice(1);
 };
