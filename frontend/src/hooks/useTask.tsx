@@ -1,24 +1,28 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { arrayMove } from "@dnd-kit/sortable";
 import { useAuth } from "../context/AuthContext";
+import { Task } from "../types";
 
 export function useTask() {
-  const [tasks, setTasks] = useState([]);
-  const nextIdRef = useRef(1);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const nextIdRef = useRef<number>(1);
   const { user, userTasks, saveUserTasks, isAuthenticated } = useAuth();
 
-  const loadLocalTasks = useCallback(() => {
+  const loadLocalTasks = useCallback((): Task[] => {
     if (!isAuthenticated) {
       const savedTasks = localStorage.getItem("taskfield");
       if (savedTasks) {
         try {
-          const parsedTasks = JSON.parse(savedTasks);
+          const parsedTasks: Task[] = JSON.parse(savedTasks);
           const validTasks = parsedTasks.filter(
-            (task) => task && typeof task.id === "number" && !isNaN(task.id)
+            (task) =>
+              task && typeof task.id === "string" && task.id.trim() !== ""
           );
 
           if (validTasks.length > 0) {
-            const maxId = Math.max(...validTasks.map((task) => task.id));
+            const maxId = Math.max(
+              ...validTasks.map((task) => parseInt(task.id) || 0)
+            );
             nextIdRef.current = maxId + 1;
           } else {
             nextIdRef.current = 1;
@@ -41,7 +45,9 @@ export function useTask() {
       setTasks(userTasks || []);
 
       if (userTasks && userTasks.length > 0) {
-        const maxId = Math.max(...userTasks.map((task) => task.id));
+        const maxId = Math.max(
+          ...userTasks.map((task) => parseInt(task.id) || 0)
+        );
         nextIdRef.current = maxId + 1;
       } else {
         nextIdRef.current = 1;
@@ -53,7 +59,7 @@ export function useTask() {
   }, [isAuthenticated, userTasks, loadLocalTasks]);
 
   const saveTasks = useCallback(
-    async (updatedTasks) => {
+    async (updatedTasks: Task[]) => {
       if (isAuthenticated && user) {
         await saveUserTasks(user.id, updatedTasks);
       } else {
@@ -64,10 +70,11 @@ export function useTask() {
     [isAuthenticated, user, saveUserTasks]
   );
 
-  const addTask = async (text, category = "general") => {
-    const newTask = {
-      id: Date.now(),
-      text,
+  const addTask = async (text: string, category: string = "general") => {
+    const newTask: Task = {
+      id: Date.now().toString(),
+      title: text,
+      text: text,
       category,
       completed: false,
     };
@@ -76,12 +83,12 @@ export function useTask() {
     await saveTasks(updatedTasks);
   };
 
-  const deleteTask = async (id) => {
+  const deleteTask = async (id: string) => {
     const updatedTasks = tasks.filter((task) => task.id !== id);
     await saveTasks(updatedTasks);
   };
 
-  const toggleTask = async (id) => {
+  const toggleTask = async (id: string) => {
     const updatedTasks = tasks.map((task) =>
       task.id === id ? { ...task, completed: !task.completed } : task
     );
@@ -104,11 +111,16 @@ export function useTask() {
     }
   };
 
-  const editTask = async (id, newText, newCategory = null) => {
+  const editTask = async (
+    id: string,
+    newText: string,
+    newCategory: string | null = null
+  ) => {
     const updatedTasks = tasks.map((task) =>
       task.id === id
         ? {
             ...task,
+            title: newText,
             text: newText,
             ...(newCategory && { category: newCategory }),
           }
@@ -117,7 +129,7 @@ export function useTask() {
     await saveTasks(updatedTasks);
   };
 
-  const reorderTasks = async (oldIndex, newIndex) => {
+  const reorderTasks = async (oldIndex: number, newIndex: number) => {
     const updatedTasks = arrayMove(tasks, oldIndex, newIndex);
     await saveTasks(updatedTasks);
   };

@@ -11,7 +11,7 @@ import {
 //убрать игнор после полной миграции)
 import { getCategoryColor, getCategoryIcon } from "../handlers/GetTags.tsx";
 //@ts-ignore
-import { useAuth } from "../../context/AuthContext.jsx";
+import { useAuth } from "../../context/AuthContext.tsx";
 import { MenuItem as MenuItem } from "../../types/index.ts";
 import MenuItemComponent from "./MenuItem.tsx";
 import "./Sidebar.css";

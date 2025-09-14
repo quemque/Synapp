@@ -5,23 +5,27 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import Sidebar from "./components/Sidebar/Sidebar.tsx";
-import HomePage from "./pages/HomePage.jsx";
-import TagsPage from "./pages/TagsPage.jsx";
-//ИЗменть на ts
-import LoginPage from "../src/components/Auth/LoginPage";
-import RegisterPage from "../src/components/Auth/Register";
-import { useTask } from "./hooks/useTask.jsx";
-import { AuthProvider, useAuth } from "./context/AuthContext.jsx";
+import Sidebar from "./components/Sidebar/Sidebar";
+import HomePage from "./pages/HomePage";
+import TagsPage from "./pages/TagsPage";
+import LoginPage from "./components/Auth/LoginPage";
+import RegisterPage from "./components/Auth/Register";
+import { useTask } from "./hooks/useTask";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import { ReactNode } from "react";
 
-const PublicRoute = ({ children }) => {
+interface PublicRouteProps {
+  children: ReactNode;
+}
+
+const PublicRoute: React.FC<PublicRouteProps> = ({ children }) => {
   const { user, loading } = useAuth();
 
   if (loading) {
     return <div className="loading">Loading...</div>;
   }
 
-  return !user ? children : <Navigate to="/" replace />;
+  return !user ? <>{children}</> : <Navigate to="/" replace />;
 };
 
 function AppContent() {

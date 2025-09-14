@@ -1,7 +1,7 @@
 import React from "react";
-import TaskForm from "../components/ui/TaskForm.tsx";
-import EditableTaskField from "../components/ui/EditableTaskField.tsx";
-import Buttons from "../components/ui/Buttons.tsx";
+import TaskForm from "../components/ui/TaskForm";
+import EditableTaskField from "../components/ui/EditableTaskField";
+import Buttons from "../components/ui/Buttons";
 import {
   DndContext,
   closestCenter,
@@ -9,14 +9,16 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
+  DragEndEvent,
 } from "@dnd-kit/core";
 import {
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import { HomePageProps } from "../types";
 
-const HomePage = ({
+const HomePage: React.FC<HomePageProps> = ({
   tasks = [],
   addTask,
   deleteTask,
@@ -37,7 +39,7 @@ const HomePage = ({
     })
   );
 
-  const handleDragEnd = (event) => {
+  const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (over && active.id !== over.id) {
       const oldIndex = tasks.findIndex((task) => task.id === active.id);

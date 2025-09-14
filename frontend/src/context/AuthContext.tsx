@@ -1,10 +1,18 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
+import {
+  User,
+  Task,
+  AuthContextType,
+  AuthProviderProps,
+  ApiResponse,
+  AuthResponse,
+} from "../types";
 
 const API_URL = import.meta.env.VITE_BACK_URL || "http://localhost:3001";
 
-const AuthContext = createContext();
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const useAuth = () => {
+export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (!context) {
     throw new Error("useAuth must be used within an AuthProvider");
@@ -12,12 +20,12 @@ export const useAuth = () => {
   return context;
 };
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [userTasks, setUserTasks] = useState([]);
+export const AuthProvider = ({ children }: AuthProviderProps) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [userTasks, setUserTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const loadUserTasks = async (userId) => {
+  const loadUserTasks = async (userId: string): Promise<Task[]> => {
     try {
       const response = await fetch(`${API_URL}/api/tasks/${userId}`);
       if (response.ok) {
@@ -34,7 +42,10 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const saveUserTasks = async (userId, tasks) => {
+  const saveUserTasks = async (
+    userId: string,
+    tasks: Task[]
+  ): Promise<boolean> => {
     try {
       const response = await fetch(`${API_URL}/api/tasks/${userId}`, {
         method: "PUT",
@@ -58,8 +69,10 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const migrateLocalTasks = async (userId) => {
-    const localTasks = JSON.parse(localStorage.getItem("taskfield") || "[]");
+  const migrateLocalTasks = async (userId: string): Promise<Task[]> => {
+    const localTasks: Task[] = JSON.parse(
+      localStorage.getItem("taskfield") || "[]"
+    );
     if (localTasks.length > 0) {
       const cloudTasks = await loadUserTasks(userId);
       const mergedTasks = [...cloudTasks];
@@ -87,7 +100,7 @@ export const AuthProvider = ({ children }) => {
 
       if (token && userData) {
         try {
-          const user = JSON.parse(userData);
+          const user: User = JSON.parse(userData);
           setUser(user);
 
           const tasks = await loadUserTasks(user.id);
@@ -104,7 +117,10 @@ export const AuthProvider = ({ children }) => {
     initializeAuth();
   }, []);
 
-  const login = async (loginIdentifier, password) => {
+  const login = async (
+    loginIdentifier: string,
+    password: string
+  ): Promise<ApiResponse<void>> => {
     try {
       const response = await fetch(`${API_URL}/api/auth/login`, {
         method: "POST",
@@ -124,7 +140,7 @@ export const AuthProvider = ({ children }) => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
+      const data: AuthResponse = await response.json();
 
       if (data.success) {
         localStorage.setItem("token", data.token);
@@ -134,20 +150,33 @@ export const AuthProvider = ({ children }) => {
         const mergedTasks = await migrateLocalTasks(data.user.id);
         setUserTasks(mergedTasks);
 
-        return { success: true };
+        return {
+          success: true,
+          data: undefined,
+          message: data.message,
+        };
       } else {
-        return { success: false, message: data.message };
+        return {
+          success: false,
+          data: undefined,
+          message: data.message,
+        };
       }
     } catch (error) {
       console.error("Login error:", error);
       return {
         success: false,
-        message: error.message || "Network error",
+        data: undefined,
+        message: (error as Error).message || "Network error",
       };
     }
   };
 
-  const register = async (username, email, password) => {
+  const register = async (
+    username: string,
+    email: string,
+    password: string
+  ): Promise<ApiResponse<void>> => {
     try {
       const response = await fetch(`${API_URL}/api/auth/register`, {
         method: "POST",
@@ -164,7 +193,7 @@ export const AuthProvider = ({ children }) => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
+      const data: AuthResponse = await response.json();
 
       if (data.success) {
         localStorage.setItem("token", data.token);
@@ -174,20 +203,29 @@ export const AuthProvider = ({ children }) => {
         const mergedTasks = await migrateLocalTasks(data.user.id);
         setUserTasks(mergedTasks);
 
-        return { success: true };
+        return {
+          success: true,
+          data: undefined,
+          message: data.message,
+        };
       } else {
-        return { success: false, message: data.message };
+        return {
+          success: false,
+          data: undefined,
+          message: data.message,
+        };
       }
     } catch (error) {
       console.error("Register error:", error);
       return {
         success: false,
-        message: error.message || "Network error",
+        data: undefined,
+        message: (error as Error).message || "Network error",
       };
     }
   };
 
-  const logout = () => {
+  const logout = (): void => {
     console.log("Logging out");
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -195,7 +233,7 @@ export const AuthProvider = ({ children }) => {
     setUserTasks([]);
   };
 
-  const value = {
+  const value: AuthContextType = {
     user,
     userTasks,
     loadUserTasks,

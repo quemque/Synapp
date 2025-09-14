@@ -1,25 +1,16 @@
-// pages/TagsPage.jsx
-import React from "react";
-import { useParams, Link } from "react-router-dom";
+import React, { useState } from "react";
+import { useParams } from "react-router-dom";
 import {
-  FaHome,
-  FaBriefcase,
-  FaBook,
-  FaShoppingCart,
-  FaHeart,
-  FaEllipsisH,
   FaCheckCircle,
   FaRegCircle,
   FaTrashAlt,
   FaGripLines,
   FaTag,
-  FaArrowLeft,
-  FaFilm,
 } from "react-icons/fa";
 import {
   getCategoryColor,
   getCategoryIcon,
-} from "../components/handlers/GetTags.tsx";
+} from "../components/handlers/GetTags";
 import { IoMdAdd, IoMdClose, IoMdSend } from "react-icons/io";
 import {
   DndContext,
@@ -28,19 +19,19 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
+  DragEndEvent,
 } from "@dnd-kit/core";
 import {
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { MdNotificationImportant } from "react-icons/md";
-import { useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { TaskItemProps, TagsPageProps } from "../types";
 import "./TagsPage.css";
 
-function TaskItem({ task, onToggleComplete, onDelete, onEdit }) {
+function TaskItem({ task, onToggleComplete, onDelete, onEdit }: TaskItemProps) {
   const {
     attributes,
     listeners,
@@ -57,18 +48,18 @@ function TaskItem({ task, onToggleComplete, onDelete, onEdit }) {
   };
 
   const [isEditing, setIsEditing] = useState(false);
-  const [editText, setEditText] = useState(task.text);
+  const [editText, setEditText] = useState(task.title || task.text || "");
 
   const taskCategory = task.category || "general";
 
-  const getCategoryName = (category) => {
+  const getCategoryName = (category: string) => {
     const cat = category || "general";
     return cat.charAt(0).toUpperCase() + cat.slice(1);
   };
 
   const handleDoubleClick = () => {
     setIsEditing(true);
-    setEditText(task.text);
+    setEditText(task.title || task.text || "");
   };
 
   const handleSave = () => {
@@ -78,14 +69,16 @@ function TaskItem({ task, onToggleComplete, onDelete, onEdit }) {
     setIsEditing(false);
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       handleSave();
     } else if (e.key === "Escape") {
       setIsEditing(false);
-      setEditText(task.text);
+      setEditText(task.title || task.text || "");
     }
   };
+
+  const taskText = task.title || task.text || "";
 
   return (
     <div className="task-items">
@@ -134,7 +127,7 @@ function TaskItem({ task, onToggleComplete, onDelete, onEdit }) {
             onDoubleClick={handleDoubleClick}
             title="Double click to edit"
           >
-            {task.text}
+            {taskText}
           </span>
         )}
 
@@ -152,7 +145,7 @@ function TaskItem({ task, onToggleComplete, onDelete, onEdit }) {
   );
 }
 
-const TagsPage = ({
+const TagsPage: React.FC<TagsPageProps> = ({
   tasks,
   onToggleComplete,
   onDelete,
@@ -160,7 +153,7 @@ const TagsPage = ({
   reorderTasks,
   addTask,
 }) => {
-  const { tagName } = useParams();
+  const { tagName } = useParams<{ tagName: string }>();
   const [isAdding, setIsAdding] = useState(false);
   const [newTaskText, setNewTaskText] = useState("");
 
@@ -175,7 +168,7 @@ const TagsPage = ({
     })
   );
 
-  const handleDragEnd = (event) => {
+  const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
@@ -205,7 +198,7 @@ const TagsPage = ({
     }
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       handleSaveNewTask();
     } else if (e.key === "Escape") {
