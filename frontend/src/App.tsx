@@ -8,6 +8,7 @@ import {
 import Sidebar from "./components/Sidebar/Sidebar";
 import HomePage from "./pages/HomePage";
 import TagsPage from "./pages/TagsPage";
+import SchedulePage from "./pages/ShedulePage.tsx";
 import LoginPage from "./components/Auth/LoginPage";
 import RegisterPage from "./components/Auth/Register";
 import { useTask } from "./hooks/useTask";
@@ -86,6 +87,17 @@ function AppContent() {
                 onEdit={editTask}
                 reorderTasks={reorderTasks}
                 addTask={addTask}
+              />
+            }
+          />
+          <Route
+            path="/schedule"
+            element={
+              <SchedulePage
+                tasks={tasks}
+                addTask={addTask}
+                deleteTask={deleteTask}
+                editTask={editTask}
               />
             }
           />

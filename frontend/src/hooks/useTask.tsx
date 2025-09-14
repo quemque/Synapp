@@ -70,13 +70,18 @@ export function useTask() {
     [isAuthenticated, user, saveUserTasks]
   );
 
-  const addTask = async (text: string, category: string = "general") => {
+  const addTask = async (
+    text: string,
+    category: string = "general",
+    dueDate?: Date
+  ) => {
     const newTask: Task = {
       id: Date.now().toString(),
       title: text,
       text: text,
       category,
       completed: false,
+      dueDate,
     };
 
     const updatedTasks = [...tasks, newTask];

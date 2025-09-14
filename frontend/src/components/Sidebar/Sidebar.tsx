@@ -7,13 +7,12 @@ import {
   FaSignInAlt,
   FaUser,
   FaSignOutAlt,
+  FaCalendarAlt,
 } from "react-icons/fa";
-//убрать игнор после полной миграции)
-import { getCategoryColor, getCategoryIcon } from "../handlers/GetTags.tsx";
-//@ts-ignore
-import { useAuth } from "../../context/AuthContext.tsx";
-import { MenuItem as MenuItem } from "../../types/index.ts";
-import MenuItemComponent from "./MenuItem.tsx";
+import { getCategoryColor, getCategoryIcon } from "../handlers/GetTags";
+import { useAuth } from "../../context/AuthContext";
+import { MenuItem as MenuItem } from "../../types/index";
+import MenuItemComponent from "./MenuItem";
 import "./Sidebar.css";
 
 const Sidebar = () => {
@@ -85,6 +84,12 @@ const Sidebar = () => {
       path: "/",
       label: "All tasks",
       icon: <FaTasks />,
+    },
+    {
+      id: "main-schedule",
+      path: "/schedule",
+      label: "Schedule",
+      icon: <FaCalendarAlt />,
     },
     {
       id: "main-tags",
