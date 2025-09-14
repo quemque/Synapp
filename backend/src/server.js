@@ -4,6 +4,7 @@ import cors from "cors";
 import authRoutes from "./routes/auth.js";
 import dotenv from "dotenv";
 import tasksRoutes from "./routes/tasks.js";
+import activitiesRoutes from "./routes/activities.js";
 
 dotenv.config();
 
@@ -46,6 +47,7 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/tasks", tasksRoutes);
+app.use("/api/activities", activitiesRoutes);
 
 app.get("/api/health", (req, res) => {
   res.json({

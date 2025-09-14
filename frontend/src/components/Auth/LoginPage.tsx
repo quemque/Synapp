@@ -1,6 +1,4 @@
 import { useState, ChangeEvent, FormEvent } from "react";
-//УБРАТЬ
-//@ts-ignore
 import { useAuth } from "../../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import {

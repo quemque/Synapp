@@ -23,6 +23,33 @@ const taskSchema = new mongoose.Schema({
   },
 });
 
+const activitySchema = new mongoose.Schema({
+  id: {
+    type: String,
+    required: true,
+  },
+  title: {
+    type: String,
+    required: true,
+  },
+  day: {
+    type: String,
+    required: true,
+  },
+  time: {
+    type: String,
+    required: true,
+  },
+  dueDate: {
+    type: Date,
+    required: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
@@ -44,6 +71,7 @@ const userSchema = new mongoose.Schema({
     minlength: 6,
   },
   tasks: [taskSchema],
+  activities: [activitySchema],
   createdAt: {
     type: Date,
     default: Date.now,

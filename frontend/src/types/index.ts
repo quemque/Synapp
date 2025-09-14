@@ -1,12 +1,20 @@
-import { ReactElement, ReactNode } from "react";
+import { ReactElement } from "react";
 
 export interface User {
   id: string;
   email: string;
   username: string;
   createdAt?: Date;
+  activities?: Activity[];
 }
 
+export interface Activity {
+  id: string;
+  title: string;
+  day: string;
+  time: string;
+  dueDate: Date;
+}
 export interface Task {
   id: string;
   title: string;
@@ -49,17 +57,17 @@ export interface Category {
 
 export type FilterStatus = "all" | "active" | "completed";
 
-export interface ApiResponse<T> {
-  data: T;
-  message?: string;
+export interface ApiResponse<T = any> {
   success: boolean;
+  data?: T;
+  message: string;
 }
 
 export interface AuthResponse {
-  user: User;
+  success: boolean;
+  message: string;
   token: string;
-  message?: string;
-  success?: boolean;
+  user: User;
 }
 
 export interface LoginCredentials {
@@ -111,10 +119,14 @@ export interface MenuItemProps {
 export interface AuthContextType {
   user: User | null;
   userTasks: Task[];
-  loading: boolean;
-  isAuthenticated: boolean;
+  userActivities: Activity[];
   loadUserTasks: (userId: string) => Promise<Task[]>;
   saveUserTasks: (userId: string, tasks: Task[]) => Promise<boolean>;
+  loadUserActivities: (userId: string) => Promise<Activity[]>;
+  saveUserActivities: (
+    userId: string,
+    activities: Activity[]
+  ) => Promise<boolean>;
   login: (
     loginIdentifier: string,
     password: string
@@ -125,10 +137,12 @@ export interface AuthContextType {
     password: string
   ) => Promise<ApiResponse<void>>;
   logout: () => void;
+  loading: boolean;
+  isAuthenticated: boolean;
 }
 
 export interface AuthProviderProps {
-  children: ReactNode;
+  children: React.ReactNode;
 }
 export interface HomePageProps {
   tasks?: Task[];

@@ -17,7 +17,7 @@ export const Auth: React.FC = () => {
       let response: AuthResponse;
       if (isLogin) {
         response = await authAPI.login({
-          email: formData.email,
+          loginIdentifier: formData.email,
           password: formData.password,
         });
       } else {

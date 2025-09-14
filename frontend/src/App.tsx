@@ -8,7 +8,7 @@ import {
 import Sidebar from "./components/Sidebar/Sidebar";
 import HomePage from "./pages/HomePage";
 import TagsPage from "./pages/TagsPage";
-import SchedulePage from "./pages/ShedulePage.tsx";
+import SchedulePage from "./pages/ShedulePage";
 import LoginPage from "./components/Auth/LoginPage";
 import RegisterPage from "./components/Auth/Register";
 import { useTask } from "./hooks/useTask";
@@ -90,17 +90,7 @@ function AppContent() {
               />
             }
           />
-          <Route
-            path="/schedule"
-            element={
-              <SchedulePage
-                tasks={tasks}
-                addTask={addTask}
-                deleteTask={deleteTask}
-                editTask={editTask}
-              />
-            }
-          />
+          <Route path="/schedule" element={<SchedulePage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
