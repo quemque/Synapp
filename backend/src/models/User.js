@@ -1,3 +1,4 @@
+// models/User.js
 import mongoose from "mongoose";
 
 const taskSchema = new mongoose.Schema({
@@ -9,6 +10,11 @@ const taskSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  title: {
+    // Добавьте это поле
+    type: String,
+    required: true,
+  },
   completed: {
     type: Boolean,
     default: false,
@@ -17,7 +23,20 @@ const taskSchema = new mongoose.Schema({
     type: String,
     default: "general",
   },
+  notificationTime: {
+    type: Date,
+    required: false,
+  },
+  dueDate: {
+    // Добавьте это поле
+    type: Date,
+    required: false,
+  },
   createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  updatedAt: {
     type: Date,
     default: Date.now,
   },

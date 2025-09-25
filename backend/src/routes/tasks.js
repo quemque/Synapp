@@ -35,7 +35,7 @@ router.put("/:userId", async (req, res) => {
     const user = await User.findByIdAndUpdate(
       req.params.userId,
       { tasks: tasks },
-      { new: true }
+      { new: true, runValidators: true }
     );
 
     if (!user) {

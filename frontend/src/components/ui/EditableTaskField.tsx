@@ -1,4 +1,4 @@
-import { useState, KeyboardEvent } from "react";
+import { useState, KeyboardEvent, useEffect } from "react";
 import "./EditableTaskField.css";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -49,9 +49,63 @@ export default function EditableTaskField({
   };
 
   const [isEditing, setIsEditing] = useState(false);
-  const [editText, setEditText] = useState(task.text);
+  const [editText, setEditText] = useState(task.text || "");
+  const [timeRemaining, setTimeRemaining] = useState<{
+    value: string;
+    label: string;
+    status: string;
+  }>({
+    value: "",
+    label: "",
+    status: "",
+  });
 
   const taskCategory = task.category || default_category_id;
+
+  const calculateTimeRemaining = (
+    notificationTime: Date
+  ): { value: string; label: string; status: string } => {
+    const now = new Date();
+    const diff = notificationTime.getTime() - now.getTime();
+
+    if (diff <= 0) {
+      return { value: "Past due", label: "", status: "past" };
+    }
+
+    const minutes = Math.floor(diff / (1000 * 60));
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (days > 0) {
+      return { value: `${days}d`, label: "left", status: "later" };
+    } else if (hours > 0) {
+      return {
+        value: `${hours}h`,
+        label: "left",
+        status: hours <= 2 ? "soon" : "later",
+      };
+    } else {
+      return {
+        value: `${minutes}m`,
+        label: "left",
+        status: minutes <= 30 ? "urgent" : "soon",
+      };
+    }
+  };
+
+  useEffect(() => {
+    if (!task.notificationTime || task.completed) return;
+
+    setTimeRemaining(calculateTimeRemaining(new Date(task.notificationTime)));
+
+    const interval = setInterval(() => {
+      setTimeRemaining(
+        calculateTimeRemaining(new Date(task.notificationTime!))
+      );
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, [task.notificationTime, task.completed]);
 
   const getCategoryName = (category: string) => {
     const cat = category || default_category_id;
@@ -60,7 +114,7 @@ export default function EditableTaskField({
 
   const handleDoubleClick = () => {
     setIsEditing(true);
-    setEditText(task.text);
+    setEditText(task.text || "");
   };
 
   const handleSave = () => {
@@ -75,7 +129,7 @@ export default function EditableTaskField({
       handleSave();
     } else if (e.key === "Escape") {
       setIsEditing(false);
-      setEditText(task.text);
+      setEditText(task.text || "");
     }
   };
 
@@ -116,6 +170,13 @@ export default function EditableTaskField({
         >
           {getCategoryIcon(taskCategory)}
         </div>
+
+        {task.notificationTime && !task.completed && timeRemaining.value && (
+          <div className={`time-remaining ${timeRemaining.status}`}>
+            <span className="time-value">{timeRemaining.value}</span>
+            <span className="time-label">{timeRemaining.label}</span>
+          </div>
+        )}
 
         {isEditing ? (
           <input

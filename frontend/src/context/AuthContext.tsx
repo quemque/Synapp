@@ -34,16 +34,21 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         const data = await response.json();
         if (data.success) {
           const tasks = data.tasks || [];
+
           const tasksWithDates = tasks.map((task: any) => ({
             ...task,
             dueDate: task.dueDate ? new Date(task.dueDate) : undefined,
             createdAt: task.createdAt ? new Date(task.createdAt) : undefined,
             updatedAt: task.updatedAt ? new Date(task.updatedAt) : undefined,
+            notificationTime: task.notificationTime
+              ? new Date(task.notificationTime)
+              : undefined,
           }));
           setUserTasks(tasksWithDates);
           return tasksWithDates;
         }
       }
+
       console.error("Failed to load tasks from server");
       return [];
     } catch (error) {
@@ -54,8 +59,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const loadUserActivities = async (userId: string): Promise<Activity[]> => {
     try {
-      console.log("Loading activities for user:", userId);
-
       const response = await fetch(`${API_URL}/api/activities/${userId}`);
 
       if (!response.ok) {
@@ -80,11 +83,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           dueDate: new Date(activity.dueDate),
         }));
 
-        console.log(
-          "Loaded",
-          activitiesWithDates.length,
-          "activities from server"
-        );
         setUserActivities(activitiesWithDates);
         return activitiesWithDates;
       }
@@ -102,12 +100,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     tasks: Task[]
   ): Promise<boolean> => {
     try {
-      // Преобразуем Date объекты в строки для сериализации
       const tasksForServer = tasks.map((task) => ({
         ...task,
         dueDate: task.dueDate ? task.dueDate.toISOString() : undefined,
         createdAt: task.createdAt ? task.createdAt.toISOString() : undefined,
         updatedAt: task.updatedAt ? task.updatedAt.toISOString() : undefined,
+        notificationTime: task.notificationTime
+          ? task.notificationTime.toISOString()
+          : undefined,
       }));
 
       const response = await fetch(`${API_URL}/api/tasks/${userId}`, {
@@ -125,7 +125,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           return true;
         }
       }
-      console.error("Failed to save tasks to server");
       return false;
     } catch (error) {
       console.error("Error saving tasks:", error);
@@ -158,7 +157,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           console.log(
             "Activities endpoint not found, saving to localStorage instead"
           );
-          // Fallback to localStorage if endpoint doesn't exist
+
           localStorage.setItem(
             "scheduleActivities",
             JSON.stringify(activities)
@@ -183,13 +182,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       return false;
     } catch (error) {
       console.error("Error saving activities:", error);
-      // Fallback to localStorage on error
+
       localStorage.setItem("scheduleActivities", JSON.stringify(activities));
       return true;
     }
   };
 
-  // Исправленная функция миграции задач
   const migrateLocalTasks = async (userId: string): Promise<Task[]> => {
     try {
       const localTasksJson = localStorage.getItem("taskfield");
@@ -203,7 +201,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       const cloudTasks = await loadUserTasks(userId);
       const mergedTasks = [...cloudTasks];
 
-      // Добавляем только уникальные задачи
       localTasks.forEach((localTask) => {
         const exists = cloudTasks.some(
           (cloudTask) => cloudTask.id === localTask.id
@@ -220,7 +217,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         return mergedTasks;
       } else {
         console.log("Failed to migrate tasks, keeping local copy");
-        return cloudTasks; // Возвращаем cloud tasks если миграция не удалась
+        return cloudTasks;
       }
     } catch (error) {
       console.error("Error migrating local tasks:", error);
@@ -228,7 +225,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  // Исправленная функция миграции активностей
   const migrateLocalActivities = async (
     userId: string
   ): Promise<Activity[]> => {
@@ -248,7 +244,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       const cloudActivities = await loadUserActivities(userId);
       const mergedActivities = [...cloudActivities];
 
-      // Добавляем только уникальные активности
       localActivities.forEach((localActivity) => {
         const exists = cloudActivities.some(
           (cloudActivity) => cloudActivity.id === localActivity.id
@@ -265,7 +260,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         return mergedActivities;
       } else {
         console.log("Failed to migrate activities, keeping local copy");
-        return cloudActivities; // Возвращаем cloud activities если миграция не удалась
+        return cloudActivities;
       }
     } catch (error) {
       console.error("Error migrating local activities:", error);

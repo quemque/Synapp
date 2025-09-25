@@ -21,6 +21,7 @@ export interface Task {
   text?: string;
   completed: boolean;
   category?: string;
+  notificationTime?: Date | null;
   dueDate?: Date;
   createdAt?: Date;
   updatedAt?: Date;
