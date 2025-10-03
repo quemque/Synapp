@@ -33,7 +33,7 @@
   height: 50px;
   width: 50px;
   color: #e0e0e0;
-  z-index: 1001;
+  z-index: 100; /* Уменьшил z-index */
   position: relative;
 }
 
@@ -51,7 +51,7 @@
   border-radius: 8px;
   padding: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 1000; /* Меньше чем у кнопки */
+  z-index: 99; /* Уменьшил z-index, чтобы был под sidebar */
   min-width: 150px;
   margin-top: 8px;
 }
@@ -96,6 +96,7 @@
   box-sizing: border-box;
   resize: vertical;
   line-height: 1.5;
+  z-index: 1; /* Низкий z-index для инпута */
 }
 
 .task-input:focus {
@@ -115,6 +116,7 @@
   height: 60px;
   width: 60px;
   min-width: 60px;
+  z-index: 1; /* Низкий z-index для кнопки */
 }
 
 .task-input-button {
@@ -175,7 +177,7 @@
   height: 50px;
   width: 50px;
   color: #e0e0e0;
-  z-index: 1001;
+  z-index: 100; /* Уменьшил z-index */
   position: relative;
 }
 
@@ -199,7 +201,7 @@
   border-radius: 8px;
   padding: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
+  z-index: 99; /* Уменьшил z-index, чтобы был под sidebar */
   min-width: 200px;
   margin-top: 8px;
 }
@@ -266,6 +268,12 @@
 
 .category-menu::before {
   display: none;
+}
+
+/* Добавьте это правило для закрытия меню при скролле */
+.category-menu,
+.notification-picker {
+  pointer-events: auto;
 }
 
 @media (max-width: 768px) {
