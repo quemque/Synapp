@@ -1,19 +1,21 @@
 // models/User.js
 import mongoose from "mongoose";
 
+console.log("🔵 [USER MODEL] Loading user schema...");
+
 const taskSchema = new mongoose.Schema({
   id: {
     type: String,
-    required: true,
+    required: [true, "Task ID is required"],
   },
   text: {
     type: String,
-    required: true,
+    required: [true, "Task text is required"],
   },
   title: {
-    // Добавьте это поле
     type: String,
-    required: true,
+    required: false,
+    default: "",
   },
   completed: {
     type: Boolean,
@@ -28,7 +30,6 @@ const taskSchema = new mongoose.Schema({
     required: false,
   },
   dueDate: {
-    // Добавьте это поле
     type: Date,
     required: false,
   },
@@ -40,6 +41,18 @@ const taskSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+});
+
+// Middleware для логирования операций с задачами
+taskSchema.pre("save", function (next) {
+  console.log("🔵 [TASK SCHEMA] Saving task:", {
+    id: this.id,
+    title: this.title,
+    text: this.text,
+    hasTitle: !!this.title,
+    hasText: !!this.text,
+  });
+  next();
 });
 
 const activitySchema = new mongoose.Schema({
@@ -96,5 +109,30 @@ const userSchema = new mongoose.Schema({
     default: Date.now,
   },
 });
+
+// Middleware для логирования операций с пользователем
+userSchema.pre("save", function (next) {
+  console.log("🔵 [USER SCHEMA] Saving user:", {
+    id: this._id,
+    username: this.username,
+    tasksCount: this.tasks ? this.tasks.length : 0,
+    activitiesCount: this.activities ? this.activities.length : 0,
+  });
+  next();
+});
+
+userSchema.post("save", function (error, doc, next) {
+  if (error) {
+    console.error("🔴 [USER SCHEMA] Save error:", error);
+    if (error.name === "ValidationError") {
+      console.error("🔴 [USER SCHEMA] Validation errors:", error.errors);
+    }
+  } else {
+    console.log("🟢 [USER SCHEMA] User saved successfully");
+  }
+  next(error);
+});
+
+console.log("🟢 [USER MODEL] User schema loaded successfully");
 
 export default mongoose.model("User", userSchema);

@@ -15,7 +15,7 @@ import { CATEGORIES, default_category_id } from "../data/categories";
 
 interface TaskForm {
   onAddTask: (
-    text: string,
+    title: string,
     category?: string,
     notificationTime?: Date | null
   ) => Promise<void>;
@@ -34,41 +34,36 @@ export default function TaskForm({ onAddTask }: TaskForm) {
   const categoryButtonRef = useRef<HTMLButtonElement>(null);
   const notificationPickerRef = useRef<HTMLDivElement>(null);
   const notificationButtonRef = useRef<HTMLButtonElement>(null);
-  const formRef = useRef<HTMLFormElement>(null);
 
   const categories = CATEGORIES;
 
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      const target = e.target as Node;
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
 
-      if (showCategoryMenu) {
-        const isClickInsideMenu = categoryMenuRef.current?.contains(target);
-        const isClickOnButton = categoryButtonRef.current?.contains(target);
-
-        if (!isClickInsideMenu && !isClickOnButton) {
-          setShowCategoryMenu(false);
-        }
+      if (
+        showCategoryMenu &&
+        categoryMenuRef.current &&
+        !categoryMenuRef.current.contains(target) &&
+        categoryButtonRef.current &&
+        !categoryButtonRef.current.contains(target)
+      ) {
+        setShowCategoryMenu(false);
       }
 
-      if (showNotificationPicker) {
-        const isClickInsidePicker =
-          notificationPickerRef.current?.contains(target);
-        const isClickOnNotificationButton =
-          notificationButtonRef.current?.contains(target);
-
-        if (!isClickInsidePicker && !isClickOnNotificationButton) {
-          setShowNotificationPicker(false);
-        }
+      if (
+        showNotificationPicker &&
+        notificationPickerRef.current &&
+        !notificationPickerRef.current.contains(target) &&
+        notificationButtonRef.current &&
+        !notificationButtonRef.current.contains(target)
+      ) {
+        setShowNotificationPicker(false);
       }
     };
 
-    const timer = setTimeout(() => {
-      document.addEventListener("mousedown", handleClickOutside);
-    }, 0);
-
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      clearTimeout(timer);
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showCategoryMenu, showNotificationPicker]);
@@ -85,14 +80,17 @@ export default function TaskForm({ onAddTask }: TaskForm) {
     return () => document.removeEventListener("keydown", handleEscape);
   }, []);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (inputValue.trim()) {
       try {
         const notificationDate = notificationTime
           ? createNotificationDate(notificationTime)
           : null;
-        onAddTask(inputValue, selectedCategory, notificationDate);
+
+        // Передаем inputValue как title
+        await onAddTask(inputValue, selectedCategory, notificationDate);
+
         setInputValue("");
         setSelectedCategory(default_category_id);
         setNotificationTime("");
@@ -161,7 +159,7 @@ export default function TaskForm({ onAddTask }: TaskForm) {
 
   return (
     <div className="rForm">
-      <form ref={formRef} onSubmit={handleSubmit} className="form-items">
+      <form onSubmit={handleSubmit} className="form-items">
         <div className="category-selector">
           <button
             ref={categoryButtonRef}
@@ -199,10 +197,7 @@ export default function TaskForm({ onAddTask }: TaskForm) {
           onChange={(e) => setInputValue(e.target.value)}
           placeholder="Enter new todo"
           className="task-input"
-          onFocus={() => {
-            setShowCategoryMenu(false);
-            setShowNotificationPicker(false);
-          }}
+          onFocus={() => setShowCategoryMenu(false)}
         />
 
         <div className="notification-selector">

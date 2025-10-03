@@ -1,3 +1,4 @@
+//import { logService } from "../services/logService";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { arrayMove } from "@dnd-kit/sortable";
 import { useAuth } from "../context/AuthContext";
@@ -9,23 +10,44 @@ export function useTask() {
   const nextIdRef = useRef<number>(1);
   const { user, userTasks, saveUserTasks, isAuthenticated } = useAuth();
 
+  console.log("🔵 [useTask] Hook initialized:", {
+    isAuthenticated,
+    user: user?.id,
+    initialTasksCount: tasks.length,
+    userTasksCount: userTasks?.length,
+  });
+
   useEffect(() => {
+    console.log("🔵 [useTask] Requesting notification permissions");
     notificationService.requestPermission().then((granted) => {
-      if (granted) {
-        console.log("Notification permissions granted");
-      }
+      console.log(
+        `🔵 [useTask] Notification permission ${granted ? "granted" : "denied"}`
+      );
     });
   }, []);
 
   useEffect(() => {
+    console.log(
+      "🔵 [useTask] Setting up task notifications, task count:",
+      tasks.length
+    );
     if (tasks.length > 0) {
       tasks.forEach((task) => {
         if (task.notificationTime && !task.completed) {
           const notificationDate = new Date(task.notificationTime);
           if (notificationDate > new Date()) {
+            console.log(
+              "🔵 [useTask] Scheduling notification for task:",
+              task.id
+            );
             notificationService.scheduleNotification(
-              task.text || "",
+              task.text || task.title || "",
               notificationDate,
+              task.id
+            );
+          } else {
+            console.log(
+              "🔵 [useTask] Notification time in past for task:",
               task.id
             );
           }
@@ -35,35 +57,63 @@ export function useTask() {
   }, [tasks]);
 
   const loadLocalTasks = useCallback((): Task[] => {
+    console.log(
+      "🔵 [useTask] Loading local tasks, isAuthenticated:",
+      isAuthenticated
+    );
+
     if (!isAuthenticated) {
       const savedTasks = localStorage.getItem("taskfield");
+      console.log("🔵 [useTask] Local storage tasks found:", !!savedTasks);
+
       if (savedTasks) {
         try {
           const parsedTasks: any[] = JSON.parse(savedTasks);
+          console.log(
+            "🔵 [useTask] Parsed tasks from localStorage:",
+            parsedTasks
+          );
+
           const validTasks = parsedTasks.filter(
             (task) =>
               task && typeof task.id === "string" && task.id.trim() !== ""
           );
 
-          const tasksWithDates = validTasks.map((task: any) => ({
+          console.log(
+            "🔵 [useTask] Valid tasks after filtering:",
+            validTasks.length
+          );
+
+          // ГАРАНТИРУЕМ наличие title у всех задач
+          const tasksWithTitles = validTasks.map((task: any) => ({
             ...task,
+            title: task.title || task.text || "", // заполняем title если отсутствует
+            text: task.text || task.title || "", // заполняем text если отсутствует
             notificationTime: task.notificationTime
               ? new Date(task.notificationTime)
               : undefined,
           })) as Task[];
 
-          if (tasksWithDates.length > 0) {
+          if (tasksWithTitles.length > 0) {
             const maxId = Math.max(
-              ...tasksWithDates.map((task) => parseInt(task.id) || 0)
+              ...tasksWithTitles.map((task) => parseInt(task.id) || 0)
             );
             nextIdRef.current = maxId + 1;
+            console.log("🔵 [useTask] Next ID ref set to:", nextIdRef.current);
           } else {
             nextIdRef.current = 1;
           }
 
-          return tasksWithDates;
+          console.log(
+            "🟢 [useTask] Local tasks loaded successfully:",
+            tasksWithTitles.length
+          );
+          return tasksWithTitles;
         } catch (error) {
-          console.error("Error parsing tasks from localStorage:", error);
+          console.error(
+            "🔴 [useTask] Error parsing tasks from localStorage:",
+            error
+          );
           nextIdRef.current = 1;
           return [];
         }
@@ -74,7 +124,16 @@ export function useTask() {
   }, [isAuthenticated]);
 
   useEffect(() => {
+    console.log(
+      "🔵 [useTask] Effect: isAuthenticated changed:",
+      isAuthenticated
+    );
+
     if (isAuthenticated) {
+      console.log(
+        "🔵 [useTask] Setting tasks from userTasks:",
+        userTasks?.length
+      );
       setTasks(userTasks || []);
 
       if (userTasks && userTasks.length > 0) {
@@ -82,23 +141,64 @@ export function useTask() {
           ...userTasks.map((task) => parseInt(task.id) || 0)
         );
         nextIdRef.current = maxId + 1;
+        console.log("🔵 [useTask] Next ID from userTasks:", nextIdRef.current);
       } else {
         nextIdRef.current = 1;
       }
     } else {
       const localTasks = loadLocalTasks();
+      console.log("🔵 [useTask] Setting local tasks:", localTasks.length);
       setTasks(localTasks);
     }
   }, [isAuthenticated, userTasks, loadLocalTasks]);
 
   const saveTasks = useCallback(
-    async (updatedTasks: Task[]) => {
-      if (isAuthenticated && user) {
-        await saveUserTasks(user.id, updatedTasks);
-      } else {
-        localStorage.setItem("taskfield", JSON.stringify(updatedTasks));
+    async (updatedTasks: Task[]): Promise<void> => {
+      console.log("🔵 [useTask] saveTasks called:", {
+        isAuthenticated,
+        userId: user?.id,
+        tasksCount: updatedTasks.length,
+      });
+
+      try {
+        // ОБЕСПЕЧИВАЕМ, что у всех задач есть title и text
+        const tasksWithTitle = updatedTasks.map((task) => ({
+          ...task,
+          title: task.title || task.text || "Untitled Task",
+          text: task.text || task.title || "Untitled Task",
+          completed: task.completed !== undefined ? task.completed : false,
+          category: task.category || "general",
+          createdAt: task.createdAt || new Date(),
+        }));
+
+        console.log(
+          "🔵 [useTask] Tasks after validation:",
+          tasksWithTitle.map((t) => ({
+            id: t.id,
+            title: t.title,
+            text: t.text,
+            hasTitle: !!t.title,
+            hasText: !!t.text,
+          }))
+        );
+
+        if (isAuthenticated && user) {
+          console.log("🔵 [useTask] Saving to backend via saveUserTasks");
+          await saveUserTasks(user.id, tasksWithTitle);
+          console.log("🟢 [useTask] Backend save successful");
+        } else {
+          console.log("🔵 [useTask] Saving to localStorage");
+          localStorage.setItem("taskfield", JSON.stringify(tasksWithTitle));
+        }
+
+        // ОБНОВЛЯЕМ СОСТОЯНИЕ ТОЛЬКО ПОСЛЕ УСПЕШНОГО СОХРАНЕНИЯ
+        console.log("🟢 [useTask] Tasks saved successfully, updating state");
+        setTasks(tasksWithTitle);
+      } catch (error) {
+        console.error("🔴 [useTask] Error saving tasks:", error);
+        // НЕ обновляем состояние при ошибке
+        throw error;
       }
-      setTasks(updatedTasks);
     },
     [isAuthenticated, user, saveUserTasks]
   );
@@ -108,6 +208,12 @@ export function useTask() {
     category: string = "general",
     notificationTime?: Date | null
   ): Promise<void> => {
+    // logService.info(" useTask", "addTask called:", {
+    //   text,
+    //   category,
+    //   notificationTime,
+    // });
+
     const newTask: Task = {
       id: Date.now().toString(),
       title: text,
@@ -115,25 +221,43 @@ export function useTask() {
       category,
       completed: false,
       notificationTime,
+      createdAt: new Date(),
     };
 
-    const updatedTasks = [...tasks, newTask];
-    await saveTasks(updatedTasks);
+    //logService.info("useTask", "New task created:", newTask);
 
-    if (notificationTime) {
-      await notificationService.requestPermission();
-      notificationService.scheduleNotification(
-        text,
-        notificationTime,
-        newTask.id
-      );
+    const updatedTasks = [...tasks, newTask];
+    console.log(
+      "🔵 [useTask] Updated tasks array length:",
+      updatedTasks.length
+    );
+
+    try {
+      // ЖДЕМ успешного сохранения перед обновлением состояния
+      await saveTasks(updatedTasks);
+      console.log("🟢 [useTask] Task added and saved successfully");
+
+      if (notificationTime) {
+        console.log("🔵 [useTask] Scheduling notification for new task");
+        await notificationService.requestPermission();
+        notificationService.scheduleNotification(
+          text,
+          notificationTime,
+          newTask.id
+        );
+      }
+    } catch (error) {
+      console.error("🔴 [useTask] Error in addTask:", error);
+      throw error;
     }
   };
 
   const deleteTask = async (id: string) => {
+    console.log("🔵 [useTask] deleteTask called:", id);
     notificationService.cancelNotification(id);
 
     const updatedTasks = tasks.filter((task) => task.id !== id);
+    console.log("🔵 [useTask] Tasks after deletion:", updatedTasks.length);
     await saveTasks(updatedTasks);
   };
 
@@ -148,7 +272,7 @@ export function useTask() {
           const notificationDate = new Date(task.notificationTime);
           if (notificationDate > new Date()) {
             notificationService.scheduleNotification(
-              updatedTask.text || "",
+              updatedTask.text || updatedTask.title || "",
               notificationDate,
               id
             );
