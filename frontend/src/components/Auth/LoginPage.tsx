@@ -34,6 +34,13 @@ const LoginPage = () => {
     setLoading(true);
     setError("");
 
+    // Validate required fields
+    if (!formData.loginIdentifier.trim() || !formData.password.trim()) {
+      setError("Email and password are required");
+      setLoading(false);
+      return;
+    }
+
     const result = await login(formData.loginIdentifier, formData.password);
 
     if (result.success) {
@@ -71,7 +78,6 @@ const LoginPage = () => {
                 onChange={handleInputChange}
                 className="form-input"
                 placeholder="Enter your email or username"
-                required
               />
             </div>
           </div>
@@ -90,7 +96,6 @@ const LoginPage = () => {
                 onChange={handleInputChange}
                 className="form-input"
                 placeholder="Enter your password"
-                required
               />
             </div>
           </div>

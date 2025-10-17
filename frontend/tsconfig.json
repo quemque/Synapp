@@ -17,6 +17,7 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*", "src/test/vitest.d.ts"],
+  "exclude": ["node_modules", "dist"],
+  "types": ["vitest/globals", "@testing-library/jest-dom"]
 }
